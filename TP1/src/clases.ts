@@ -1,7 +1,40 @@
 export enum Region{"AR","BR","CH"};
 
-interface Titulo{
+abstract class Titulo{
     titulo: string;
+    region: Array<Region>;
+
+    constructor(titulo: string){
+        this.titulo=titulo; 
+    }
+
+    getTitulo(): string{
+        return this.titulo;
+    }
+
+    setTitulo(nuevo: string): void{
+        this.titulo = nuevo;
+    }
+
+    disponible(regionD: Region): boolean{
+        for (let i=0; i < this.region.length; i++) {
+            if(this.region[i] == regionD){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    agregarRegion(regionA: Region): void{
+        this.region.push(regionA);
+    }
+
+    quitarRegion(regionQ: Region): void{
+        let i = this.region.indexOf(regionQ);
+        this.region.splice(i,1)
+    }
+
+
 }
 
 export class Sistema{
@@ -43,7 +76,8 @@ export class Sistema{
 export class Usuario{
     nombre: string;
     region: Region;
-    lista: Map<Titulo,number>;
+    listaViendo: Map<Titulo,number>;
+    listaVista: Array<Titulo>;
 
     constructor (nombre: string, region:Region){
         this.nombre = nombre;
@@ -58,13 +92,24 @@ export class Usuario{
         return this.region;
     }
 
-    visto(titulo: Titulo): boolean{   
+    visto(titulo: Titulo): boolean{
+       this.listaVista.forEach( x =>{
+            if(x == titulo){
+                return true;
+            }
+       });
+        return false;
     }
 
-    viendo(titulo: Titulo): boolean{   
+    viendo(titulo: Titulo): boolean{  
+        if(this.listaViendo.get(titulo)){
+            return true;
+        }
+        return false;
     }
 
-    capituloActual(serie: Titulo): number{   
+    capituloActual(serie: Titulo): number{
+           
     }
 
     ver(titulo: Titulo, tiempo_visualizado: number): boolean{
@@ -89,40 +134,8 @@ export class Contenido{
     }
 }
 
-export class Pelicula implements Titulo{
-    titulo: string;
-    region: Array<Region>;
+export class Pelicula extends Titulo{
     contenido: Contenido;
-
-    constructor (titulo: string){
-        this.titulo = titulo;
-    }
-
-    getTitulo(): string{
-        return this.titulo;
-    }
-
-    setTitulo(nuevo: string): void{
-        this.titulo = nuevo;
-    }
-
-    disponible(regionD: Region): boolean{
-        for (let i=0; i < this.region.length; i++) {
-            if(this.region[i] == regionD){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    agregarRegion(regionA: Region): void{
-        this.region.push(regionA);
-    }
-
-    quitarRegion(regionQ: Region): void{
-        let i = this.region.indexOf(regionQ);
-        this.region.splice(i,1)
-    }
 
     getContenido(): Contenido{
         return this.contenido;
@@ -133,40 +146,8 @@ export class Pelicula implements Titulo{
     }
 }
 
-export class Serie implements Titulo{
-    titulo: string;
-    region: Array<Region>;
+export class Serie extends Titulo{
     contenido: Array<Contenido>;
-
-    constructor(titulo: string){
-        this.titulo = titulo;
-    }
-
-    getTitulo(): string{
-        return this.titulo;
-    }
-
-    setTitulo(nuevo: string): void{
-        this.titulo = nuevo;
-    }
-
-    disponible(regionD: Region): boolean{
-        for (let i=0; i < this.region.length; i++) {
-            if(this.region[i] == regionD){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    agregarRegion(regionA: Region): void{
-        this.region.push(regionA);
-    }
-
-    quitarRegion(regionQ: Region): void{
-        let i = this.region.indexOf(regionQ);
-        this.region.splice(i,1)
-    }
 
     agregarCapitulo(capitulo: Contenido): void{
         this.contenido.push(capitulo);
