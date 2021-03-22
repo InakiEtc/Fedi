@@ -5,7 +5,7 @@ abstract class Titulo{
     region: Array<Region>;
 
     constructor(titulo: string){
-        this.titulo=titulo; 
+        this.titulo = titulo; 
     }
 
     getTitulo(): string{
@@ -76,12 +76,14 @@ export class Sistema{
 export class Usuario{
     nombre: string;
     region: Region;
-    listaViendo: Map<Titulo,number>;
+    lista: Map<Titulo,number>;
     capsVistos: Map<Titulo,number>;
 
     constructor (nombre: string, region:Region){
         this.nombre = nombre;
         this.region = region;
+        this.lista = new Map();
+        this.capsVistos = new Map();
     }
 
     getUsername(): string{
@@ -94,7 +96,7 @@ export class Usuario{
 
     visto(titulo: Titulo): boolean{
         if(titulo instanceof Pelicula){
-            if(titulo.getContenido().getDuracion() == this.listaViendo.get(titulo)){
+            if(titulo.getContenido().getDuracion() == this.lista.get(titulo)){
                 return true;
             }
         }
@@ -108,7 +110,7 @@ export class Usuario{
 
     viendo(titulo: Titulo): boolean{  
         if(titulo instanceof Pelicula){
-            if(titulo.getContenido().getDuracion() != this.listaViendo.get(titulo)){
+            if(titulo.getContenido().getDuracion() != this.lista.get(titulo)){
                 return true;
             }
         }
@@ -135,7 +137,20 @@ export class Usuario{
     }
 
     ver(titulo: Titulo, tiempo_visualizado: number): boolean{
-        
+        if(titulo instanceof Pelicula){
+            if(titulo.disponible(this.region)){
+                if(titulo.getContenido().getDuracion() <= tiempo_visualizado){
+                    this.lista.set(titulo, tiempo_visualizado);
+                    return true;
+                }
+            }
+        }
+        else if(titulo instanceof Serie){
+            if(titulo.disponible(this.region)){
+                if(titulo)
+            }
+        }
+        return false;
     }
 }
 
