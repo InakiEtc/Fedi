@@ -77,7 +77,7 @@ export class Usuario{
     nombre: string;
     region: Region;
     listaViendo: Map<Titulo,number>;
-    listaVista: Array<Titulo>;
+    capsVistos: Map<Titulo,number>;
 
     constructor (nombre: string, region:Region){
         this.nombre = nombre;
@@ -93,23 +93,45 @@ export class Usuario{
     }
 
     visto(titulo: Titulo): boolean{
-       this.listaVista.forEach( x =>{
-            if(x == titulo){
+        if(titulo instanceof Pelicula){
+            if(titulo.getContenido().getDuracion() == this.listaViendo.get(titulo)){
                 return true;
             }
-       });
+        }
+        else if(titulo instanceof Serie){
+            if(titulo.cantidadDeCapitulos() == this.capsVistos.get(titulo)){
+                return true
+            }
+        }
         return false;
     }
 
     viendo(titulo: Titulo): boolean{  
-        if(this.listaViendo.get(titulo)){
-            return true;
+        if(titulo instanceof Pelicula){
+            if(titulo.getContenido().getDuracion() != this.listaViendo.get(titulo)){
+                return true;
+            }
+        }
+        else if(titulo instanceof Serie){
+            if(titulo.cantidadDeCapitulos() != this.capsVistos.get(titulo)){
+                return true
+            }
         }
         return false;
     }
 
     capituloActual(serie: Titulo): number{
-           
+        if(serie instanceof Serie){
+            if(this.visto){
+                return serie.cantidadDeCapitulos();
+            }
+            else if(!this.visto && !this.viendo){
+                return 0;
+            }
+            else if (this.viendo){
+                
+            }
+        }
     }
 
     ver(titulo: Titulo, tiempo_visualizado: number): boolean{
