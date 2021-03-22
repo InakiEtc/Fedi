@@ -129,12 +129,13 @@ export class Usuario{
                 return 0;
             }
             else if (this.viendo){
-                
+                return this.capsVistos.get(serie)+1;
             }
         }
     }
 
     ver(titulo: Titulo, tiempo_visualizado: number): boolean{
+        
     }
 }
 
