@@ -147,7 +147,9 @@ export class Usuario{
         }
         else if(titulo instanceof Serie){
             if(titulo.disponible(this.region)){
-                if(titulo)
+                if(){
+                    
+                }
             }
         }
         return false;
