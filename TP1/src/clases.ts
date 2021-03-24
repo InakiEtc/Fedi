@@ -77,12 +77,14 @@ export class Usuario{
     nombre: string;
     region: Region;
     lista: Map<Titulo,number>;
+    listaVista: Array<Titulo>;
     capsVistos: Map<Titulo,number>;
 
     constructor (nombre: string, region:Region){
         this.nombre = nombre;
         this.region = region;
         this.lista = new Map();
+        this.listaVista = new Array();
         this.capsVistos = new Map();
     }
 
@@ -96,13 +98,15 @@ export class Usuario{
 
     visto(titulo: Titulo): boolean{
         if(titulo instanceof Pelicula){
-            if(titulo.getContenido().getDuracion() == this.lista.get(titulo)){
-                return true;
-            }
+            this.listaVista.forEach(x => {
+                if(x == titulo){
+                    return true;
+                }
+            });
         }
         else if(titulo instanceof Serie){
             if(titulo.cantidadDeCapitulos() == this.capsVistos.get(titulo)){
-                return true
+                return true;
             }
         }
         return false;
@@ -110,13 +114,13 @@ export class Usuario{
 
     viendo(titulo: Titulo): boolean{  
         if(titulo instanceof Pelicula){
-            if(titulo.getContenido().getDuracion() != this.lista.get(titulo)){
+            if(this.lista.has(titulo)){
                 return true;
             }
         }
         else if(titulo instanceof Serie){
             if(titulo.cantidadDeCapitulos() != this.capsVistos.get(titulo)){
-                return true
+                return true;
             }
         }
         return false;
@@ -139,15 +143,22 @@ export class Usuario{
     ver(titulo: Titulo, tiempo_visualizado: number): boolean{
         if(titulo instanceof Pelicula){
             if(titulo.disponible(this.region)){
-                if(titulo.getContenido().getDuracion() <= tiempo_visualizado){
+                if(titulo.getContenido().getDuracion() == tiempo_visualizado){
+                    this.listaVista.push(titulo);
+                    return true;
+                }
+                else if (titulo.getContenido().getDuracion() > tiempo_visualizado){
                     this.lista.set(titulo, tiempo_visualizado);
                     return true;
+                }
+                else{
+                    console.log("Pusiste un Tiempo mas grande del que dura la pelicula");
                 }
             }
         }
         else if(titulo instanceof Serie){
             if(titulo.disponible(this.region)){
-                if(){
+                for (let i=0; i < titulo.cantidadDeCapitulos(); i++) {
                     
                 }
             }
