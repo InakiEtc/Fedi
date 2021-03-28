@@ -147,20 +147,45 @@ export class Usuario{
                     this.listaVista.push(titulo);
                     return true;
                 }
-                else if (titulo.getContenido().getDuracion() > tiempo_visualizado){
-                    this.lista.set(titulo, tiempo_visualizado);
-                    return true;
+                else if (titulo.getContenido().getDuracion() < tiempo_visualizado){
+                    return false;
                 }
                 else{
-                    console.log("Pusiste un Tiempo mas grande del que dura la pelicula");
+                    if(this.lista.has(titulo)){
+                        let tiempo = this.lista.get(titulo);
+                        if(tiempo + tiempo_visualizado > titulo.getContenido().getDuracion()){
+                            return false;
+                        }
+                        else if(tiempo + tiempo_visualizado < titulo.getContenido().getDuracion()){
+                            this.lista.set(titulo,(tiempo + tiempo_visualizado));
+                        }
+                        else{
+                            this.listaVista.push(titulo);
+                            this.lista.delete(titulo);
+                        }
+                    }
+                    else{
+                        this.lista.set(titulo,tiempo_visualizado);
+                    }
                 }
             }
         }
         else if(titulo instanceof Serie){
             if(titulo.disponible(this.region)){
+                let duracionTotal = 0;
                 for (let i=0; i < titulo.cantidadDeCapitulos(); i++) {
+                    duracionTotal= duracionTotal + titulo.obtenerCapitulo(i).getDuracion();
+                }
+                if(tiempo_visualizado = duracionTotal){
+                    this.listaVista.push(titulo);
+                }
+                else if (tiempo_visualizado > duracionTotal){
+                    return false;
+                }
+                else{
                     
                 }
+
             }
         }
         return false;
