@@ -1,0 +1,12 @@
+{
+    "files": [
+        "clases.ts",
+        "main.ts"
+    ],
+    "compilerOptions": {
+        "lib": [
+            "ES2016",
+            "DOM"
+        ]
+    }
+}

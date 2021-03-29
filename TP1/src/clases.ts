@@ -6,6 +6,7 @@ abstract class Titulo{
 
     constructor(titulo: string){
         this.titulo = titulo; 
+        this.region = new Array();
     }
 
     getTitulo(): string{
@@ -41,25 +42,32 @@ export class Sistema{
     Usuarios: Array<Usuario>;
     Biblioteca: Array<Titulo>;
 
-    agregarUsuario(usuario: Usuario): boolean{
-        for (let i=0; i< this.Usuarios.length; i++) {
-            if(this.Usuarios[i] == usuario){
-                return false;
+    constructor(){
+        this.Usuarios = new Array();
+        this.Biblioteca = new Array();
+    }
+
+    agregarUsuario(usuario: Usuario): boolean {
+        let repetido: boolean;
+        this.Usuarios.forEach(element => {
+            if (element.getUsername() == usuario.getUsername()) {
+                repetido = true;
             }
+        });
+        if (repetido == true) {
+            return false;
+        } else {
+            this.Usuarios.push(usuario);
+            return true;
         }
-        return true;
     }
 
     agregarTitulo(titulo: Titulo): void{
         this.Biblioteca.push(titulo);
     }
 
-    buscarUsuario(nombreB: string): Usuario{
-        for (let i=0; i< this.Usuarios.length; i++) {
-            if(this.Usuarios[i].nombre == nombreB){
-                return this.Usuarios[i];
-            }
-        }
+    buscarUsuario(nombre: String): Usuario {
+        return this.Usuarios.find(Usuario => Usuario.getUsername() == nombre);
     }
 
     buscarTitulo(nombre: string): Array<Titulo>{
@@ -98,11 +106,9 @@ export class Usuario{
 
     visto(titulo: Titulo): boolean{
         if(titulo instanceof Pelicula){
-            this.listaVista.forEach(x => {
-                if(x == titulo){
-                    return true;
-                }
-            });
+            if(this.listaVista.includes(titulo)){
+                return true;
+            }
         }
         else if(titulo instanceof Serie){
             if(titulo.cantidadDeCapitulos() == this.capsVistos.get(titulo)){
@@ -158,14 +164,17 @@ export class Usuario{
                         }
                         else if(tiempo + tiempo_visualizado < titulo.getContenido().getDuracion()){
                             this.lista.set(titulo,(tiempo + tiempo_visualizado));
+                            return true;
                         }
                         else{
                             this.listaVista.push(titulo);
                             this.lista.delete(titulo);
+                            return true;
                         }
                     }
                     else{
                         this.lista.set(titulo,tiempo_visualizado);
+                        return true;
                     }
                 }
             }
@@ -175,15 +184,63 @@ export class Usuario{
                 let duracionTotal = 0;
                 for (let i=0; i < titulo.cantidadDeCapitulos(); i++) {
                     duracionTotal= duracionTotal + titulo.obtenerCapitulo(i).getDuracion();
+                    return true;
                 }
                 if(tiempo_visualizado = duracionTotal){
                     this.listaVista.push(titulo);
+                    return true;
                 }
                 else if (tiempo_visualizado > duracionTotal){
                     return false;
                 }
                 else{
-                    
+                    if(this.lista.has(titulo)){
+                        if(titulo.obtenerCapitulo(this.capituloActual(titulo)).getDuracion() == 0){
+                            let tiempoRestante = 0;
+                            for (let i = this.capsVistos.get(titulo); i < titulo.cantidadDeCapitulos(); i++) {
+                                if(this.capsVistos.get(titulo) == titulo.cantidadDeCapitulos()){
+                                    this.lista.delete(titulo);
+                                    this.listaVista.push(titulo);
+                                    return true;
+                                }
+                                else {
+                                    tiempoRestante = tiempo_visualizado - titulo.obtenerCapitulo(i).getDuracion();
+                                    this.lista.set(titulo,tiempoRestante);
+                                    this.capsVistos.set(titulo,this.capsVistos.get(titulo)+1);
+                                }
+                            }
+                        }
+                        else{
+                            tiempo_visualizado = tiempo_visualizado - (titulo.obtenerCapitulo(this.capituloActual(titulo)).getDuracion() - this.lista.get(titulo));
+                            this.capsVistos.set(titulo,this.capsVistos.get(titulo)+1);
+                            let tiempoRestante = 0;
+                            for (let i = this.capsVistos.get(titulo); i < titulo.cantidadDeCapitulos(); i++) {
+                                if(this.capsVistos.get(titulo) == titulo.cantidadDeCapitulos()){
+                                    this.lista.delete(titulo);
+                                    this.listaVista.push(titulo);
+                                    return true;
+                                }
+                                else {
+                                    tiempoRestante = tiempo_visualizado - titulo.obtenerCapitulo(i).getDuracion();
+                                    this.lista.set(titulo,tiempoRestante);
+                                    this.capsVistos.set(titulo,this.capsVistos.get(titulo)+1);
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        let tiempoRestante = 0;
+                        let vueltas = 0;
+                        for (let i=0; i < titulo.cantidadDeCapitulos(); i++) {
+                            if(tiempo_visualizado == 0){
+                                this.lista.set(titulo,tiempoRestante);
+                                this.capsVistos.set(titulo,vueltas);
+                                return true;
+                            }
+                            tiempoRestante = tiempo_visualizado - titulo.obtenerCapitulo(i).getDuracion();
+                            vueltas++;                         
+                        }
+                    }
                 }
 
             }
@@ -213,6 +270,10 @@ export class Contenido{
 export class Pelicula extends Titulo{
     contenido: Contenido;
 
+    constructor(titulo: string){
+        super(titulo);
+    }
+
     getContenido(): Contenido{
         return this.contenido;
     }
@@ -224,6 +285,11 @@ export class Pelicula extends Titulo{
 
 export class Serie extends Titulo{
     contenido: Array<Contenido>;
+
+    constructor(titulo: string){
+        super(titulo);
+        this.contenido = new Array();
+    }
 
     agregarCapitulo(capitulo: Contenido): void{
         this.contenido.push(capitulo);
