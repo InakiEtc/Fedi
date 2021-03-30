@@ -131,14 +131,14 @@ var Usuario = /** @class */ (function () {
     };
     Usuario.prototype.capituloActual = function (serie) {
         if (serie instanceof Serie) {
-            if (serie.cantidadDeCapitulos() == this.capsVistos.get(serie)) {
+            if (this.visto) {
                 return serie.cantidadDeCapitulos();
             }
             else if (!this.visto && !this.viendo) {
                 return 0;
             }
-            else if (serie.cantidadDeCapitulos() != this.capsVistos.get(serie)) {
-                return this.capsVistos.get(serie) + 1;
+            else if (this.viendo) {
+                return this.capsVistos.get(serie);
             }
         }
     };

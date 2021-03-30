@@ -140,7 +140,7 @@ export class Usuario{
             else if(!this.visto && !this.viendo){
                 return 0;
             }
-            else if (this.viendo){
+            else if(this.viendo){
                 return this.capsVistos.get(serie)+1;
             }
         }
