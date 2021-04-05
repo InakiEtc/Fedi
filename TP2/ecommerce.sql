@@ -208,3 +208,5 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2021-01-16 11:28:16
+
+select * from productos where usado=1 & nombre like %PS2% order by precio;
