@@ -2,7 +2,7 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: /*'pelaroot'*/ 'alumnoipm',
+    password: 'pelaroot',
     database: 'ecommerce'
 });
 connection.connect(function (err) {
@@ -47,7 +47,3 @@ app.get('/productos', function (req, res) {
         console.log(query.sql);
     });
 });
-/* var query = connection.query("select * from productos where usado = ? and nombre like ? order by ?;",[usado, busqueda,orden], function (error, results, fields){
-   if (error) throw error;
-     res.json(results);
- });*/ 
