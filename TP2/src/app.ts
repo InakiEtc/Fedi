@@ -12,14 +12,14 @@ connection.connect(function(err) {
     return;
   }
  
-  console.log('connected to mySQL');
+  console.log('Se conecto correctamente a mySQL');
 });
 
 const express = require('express');
 const app = express();
 const port = 3000;
 app.listen(port, () => {
-  console.log(`se levanto el server en http://localhost:${port}`);
+  console.log(`Se levanto el server en http://localhost:${port}`);
 })
 
 app.get('/', (req, res) => {
@@ -50,6 +50,5 @@ app.get('/productos', (req, res) => {
   var query = connection.query(sentencia, function (error, results, fields){
     if (error) throw error;
       res.json(results);
-      console.log(query.sql);
   });
 })
