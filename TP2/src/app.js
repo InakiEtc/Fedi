@@ -40,10 +40,19 @@ app.get('/productos', function (req, res) {
     if (orden != null) {
         sentencia = sentencia + ' order by ' + orden + ' asc';
     }
-    var query = connection.query(sentencia, function (error, results, fields) {
+    connection.query(sentencia, function (error, results, fields) {
         if (error)
             throw error;
         res.json(results);
-        console.log(query.sql);
+    });
+});
+app.post('/usuarios/:id_usuario/fav', function (req, res) {
+    var id = req.param('id_usuario');
+    var id_producto = req.param('idP');
+    var sentencia = "insert into favoritos values (null," + id + "," + id_producto + ")";
+    connection.query(sentencia, function (error, results, fields) {
+        if (error)
+            throw error;
+        res.json(results);
     });
 });

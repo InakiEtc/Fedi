@@ -47,8 +47,20 @@ app.get('/productos', (req, res) => {
     sentencia = sentencia + ' order by '+ orden +' asc';
   }
 
-  var query = connection.query(sentencia, function (error, results, fields){
+  connection.query(sentencia, function (error, results, fields){
     if (error) throw error;
       res.json(results);
   });
+})
+
+app.post('/usuarios/:id_usuario/fav', (req,res) =>{
+  var id = req.param('id_usuario');
+  var id_producto = req.param('idP');
+  var sentencia = "insert into favoritos values (null,"+id+","+id_producto+")";
+
+  connection.query(sentencia, function (error, results, fields){
+    if (error) throw error;
+      res.json(results);
+  });
+
 })
