@@ -56,3 +56,30 @@ app.post('/usuarios/:id_usuario/fav', function (req, res) {
         res.json(results);
     });
 });
+app.route('/usuarios/:id_usuario/fav')
+    .get(function (req, res) {
+    var id = req.param('id_usuario');
+    var sentencia = "select * from favoritos where id_usuario = " + id + "";
+    connection.query(sentencia, function (error, results, fields) {
+        if (error)
+            throw error;
+        res.json(results);
+    });
+})
+    .post(function (req, res) {
+    var id = req.param('id_usuario');
+    var id_producto = req.param('idP');
+    var sentencia = "insert into favoritos values (null," + id + "," + id_producto + ")";
+    connection.query(sentencia, function (error, results, fields) {
+        if (error)
+            throw error;
+    });
+})["delete"](function (req, res, next) {
+    var id = req.param('id_usuario');
+    var id_producto = req.param('idP');
+    var sentencia = "delete from favoritos where id_usuario = " + id + " and id_producto =" + id_producto + " ";
+    connection.query(sentencia, function (error, results, fields) {
+        if (error)
+            throw error;
+    });
+});
