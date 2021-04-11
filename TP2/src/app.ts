@@ -77,8 +77,8 @@ app.route('/usuarios/:id_usuario/fav')
   .post(function (req, res) {
     var id = req.param('id_usuario');
     var id_producto = req.param('idP');
+    
     var sentencia = "insert into favoritos values (null,"+id+","+id_producto+")";
-
     connection.query(sentencia, function (error, results, fields){
       if (error) throw error;
     })
@@ -92,3 +92,38 @@ app.route('/usuarios/:id_usuario/fav')
       if (error) throw error;
     })
   });
+
+  app.route('/usuarios/:id_usuario/compras')
+  .get(function (req, res){
+    var id = req.param('id_usuario');
+    var sentencia = "select compras.* from usuarios inner join compras on usuarios.id = compras.id_usuario where id_usuario = "+id+"";
+    connection.query(sentencia, function (error, results, fields){
+      if (error) throw error;
+        res.json(results);
+    })
+  })
+  .post(function (req, res) {
+    var id = req.param('id_usuario');
+    var idProducto = req.param('idP');
+    var cant = req.param('cantidad');
+
+    var sentencia = "select stock as stockP from productos where id="+idProducto+"";
+    connection.query(sentencia, function (error, results, fields){
+        if (error) throw error;
+        var stock = results[0].stockP;
+      
+      if(stock >= cant  && idProducto != null){
+        var sentencia1 = "insert into compras values (null,"+id+","+idProducto+","+cant+",now(),0,0)";
+        connection.query(sentencia1, function (error, results, fields){
+          if (error) throw error;
+        })
+        var sentencia2 = "update productos set stock= "+(stock-cant)+" where id = "+idProducto+" ";
+        connection.query(sentencia2, function (error, results, fields){
+          if (error) throw error;
+        })
+      }
+      else{
+        console.log("No hay stock suficiente");
+      }
+    })
+  })
