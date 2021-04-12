@@ -46,16 +46,6 @@ app.get('/productos', function (req, res) {
         res.json(results);
     });
 });
-app.post('/usuarios/:id_usuario/fav', function (req, res) {
-    var id = req.param('id_usuario');
-    var id_producto = req.param('idP');
-    var sentencia = "insert into favoritos values (null," + id + "," + id_producto + ")";
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        res.json(results);
-    });
-});
 app.route('/usuarios/:id_usuario/fav')
     .get(function (req, res) {
     var id = req.param('id_usuario');
@@ -68,20 +58,20 @@ app.route('/usuarios/:id_usuario/fav')
 })
     .post(function (req, res) {
     var id = req.param('id_usuario');
-    var id_producto = req.param('idP');
-    var sentencia1 = "select id_producto as prod from favoritos where id_usuario = " + id + "";
-    connection.query(sentencia1, function (error, results, fields) {
+    var id_p = req.param('idP');
+    var sentencia = "select id_producto from favoritos where id_usuario = " + id + "";
+    connection.query(sentencia, function (error, results, fields) {
         if (error)
             throw error;
-        for (var i = 0; i < results; i++) {
-            console.log(results[i].prod);
-            /*if(results[i].prod == id_producto){
-              console.log("Ya esta en favoritos");
-              return false;
-            }*/
+        var json = (JSON.parse(JSON.stringify(results)));
+        for (var i = 0; i < json.length; i++) {
+            if (json[i].id_producto == id_p) {
+                console.log("Ya esta en favoritos");
+                return;
+            }
         }
-        var sentencia = "insert into favoritos values (null," + id + "," + id_producto + ")";
-        connection.query(sentencia, function (error, results, fields) {
+        var sentencia1 = "insert into favoritos values (null," + id + "," + id_p + ")";
+        connection.query(sentencia1, function (error, results, fields) {
             if (error)
                 throw error;
         });
