@@ -1,8 +1,10 @@
+import { Usuario, Producto, Favorito, Compra, CalificacionComprador,CalificacionVendedor} from "./clases";
+
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'pelaroot',// 'alumnoipm',
+  password : 'pelaroot',//'alumnoipm',
   database : 'ecommerce'
 });
  
@@ -82,8 +84,6 @@ app.route('/usuarios/:id_usuario/fav')
         if (error) throw error;
       })
     })
-
-    
   })
   .delete(function (req,res,next){
     var id = req.param('id_usuario');
