@@ -1,4 +1,4 @@
-import { Usuario, Producto, Favorito, Compra, CalificacionComprador,CalificacionVendedor} from "./clases";
+import { Producto} from "./clases";
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
@@ -128,4 +128,8 @@ app.route('/usuarios/:id_usuario/fav')
         console.log("No hay stock suficiente");
       }
     })
+  })
+
+  app.get('/prueba', async(req, res) => {
+    Producto p = await Producto.find(1);
   })
