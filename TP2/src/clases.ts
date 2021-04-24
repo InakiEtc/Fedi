@@ -14,15 +14,12 @@ abstract class Tabla{
   }
 
   save(){
-      /*?*/
   }
   
-  where(){
-      /*?*/
+  where(atributo:string ,condcion:string, valor:string){
   }
 
   orderby(atributo:String, tipo:String){  
-    /*?*/
   }
 }
 
@@ -73,6 +70,20 @@ export class Producto extends Tabla{
       });
     });
   }
+
+  static async get(){
+    return new Promise(function (resolve, reject){
+      Producto.Conexion().query(/*query*/, function (error, results, fields){
+        if (error) throw error;
+        let products: Set<Producto> = new Set();
+        results.forEach(x => {
+          products.push(/*algo*/);
+        });
+        resolve(products);
+      });
+    });
+  }
+
 }
 
 export class Usuario extends Tabla{
