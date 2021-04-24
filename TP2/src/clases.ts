@@ -16,10 +16,14 @@ connection.connect(function(err) {
 })
 
 export abstract class Tabla{
-  private nombreTabla: String;
-  private query:String;
+  nombreTabla: String;
+  query: String;
 
-  private find(id:number){
+  constructor(nombre: String){
+    this.nombreTabla = nombre;
+  }
+
+  find(id:number){
     this.query = 'select * from '+this.nombreTabla+' where id = '+id;
 
     connection.query(this.query, function (error, results, fields){
@@ -29,171 +33,163 @@ export abstract class Tabla{
     return null;
   }
 
-  private save(){
+  save(){
       /*?*/
   }
   
-  private where(){
+  where(){
       /*?*/
   }
 
-  private orderby(atributo:String, tipo:String){  
+  orderby(atributo:String, tipo:String){  
     this.query+="order by "+atributo+" "+tipo;
-  }
-
-  private get(){
-    connection.query(this.query, function (error, results, fields){
-        if (error) throw error;
-        return results;   
-    })
-    return null;
   }
 }
 
 export class Usuario extends Tabla{
-  private id:number;
-  private username:string;
-  private saldo:number;
-  private calificacion_vendedor:number;
-  private calificacion_comprador:number;
+  id:number;
+  username:string;
+  saldo:number;
+  calificacion_vendedor:number;
+  calificacion_comprador:number;
 
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getUsername():String{
+  getUsername():String{
     return this.username;
   }
-  public getSaldo():number{
+  getSaldo():number{
     return this.saldo;
   }
-  public getCalificacionVendedor():number{
+  getCalificacionVendedor():number{
     return this.calificacion_vendedor;
   }
-  public getCalificacionComprador():number{
+  getCalificacionComprador():number{
     return this.calificacion_comprador;
   }
 }
 
 export class Producto extends Tabla{
-  private id:number;
-  private nombre:string;
-  private vendedor:number;
-  private precio:number;
-  private stock:number;
-  private usado: number;
+  id:number;
+  nombre:string;
+  vendedor:number;
+  precio:number;
+  stock:number;
+  usado: number;
 
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getNombre():String{
+  getNombre():String{
     return this.nombre;
   }
-  public getPrecio():number{
+  getPrecio():number{
     return this.precio;
   }
-  public getVendedor():number{
+  getVendedor():number{
     return this.vendedor;
   }
-  public getStock():number{
+  getStock():number{
     return this.stock;
   }
-  public getUsado():number{
+  getUsado():number{
     return this.usado;
   }
 }
 
 export class Favorito extends Tabla{
-  private id:number;
-  private idUsuario:number;
-  private idProducto:number;
+  id:number;
+  idUsuario:number;
+  idProducto:number;
 
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getIdUsuario():number{
+  getIdUsuario():number{
     return this.idUsuario;
   }
-  public getIdProducto():number{
+  getIdProducto():number{
     return this.idProducto;
   }
 }
 
 export class Compra extends Tabla{
-  private id:number;
-  private idUsuario:number;
-  private idProducto:number;
-  private cantidad:number;
-  private fecha:Date;// o string??
-  private compradorCalificado: number;
-  private vendedorCalificado: number;
+  id:number;
+  idUsuario:number;
+  idProducto:number;
+  cantidad:number;
+  fecha:Date;// o string??
+  compradorCalificado: number;
+  vendedorCalificado: number;
 
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getIdUsuario():number{
+  getIdUsuario():number{
     return this.idUsuario;
   }
-  public getIdProducto():number{
+  getIdProducto():number{
     return this.idProducto;
   }
-  public getCantidad():number{
+  getCantidad():number{
     return this.cantidad;
   }
-  public getFecha():Date{
+  getFecha():Date{
     return this.fecha;
   }
-  public getCompradorCalificado():number{
+  getCompradorCalificado():number{
     return this.compradorCalificado;
   }
-  public getVendedorCalificado():number{
+  getVendedorCalificado():number{
     return this.vendedorCalificado;
   }
 }
 
 export class CalificacionVendedor extends Tabla{
-  private id:number;
-  private idUsuario:number;
-  private idVendedor:number;
-  private fecha:Date// o string??
-  private calificacion: number;
+  id:number;
+  idUsuario:number;
+  idVendedor:number;
+  fecha: String;
+  calificacion: number;
   
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getIdUsuario():number{
+  getIdUsuario():number{
     return this.idUsuario;
   }
-  public getIdVendedor():number{
+  getIdVendedor():number{
     return this.idVendedor;
   }
-  public getFecha():Date{
+  getFecha(): String{
     return this.fecha;
   }
-  public getCalificacion():number{
+  getCalificacion():number{
     return this.calificacion;
   }
 }
 
 export class CalificacionComprador extends Tabla{
-  private id:number;
-  private idUsuario:number;
-  private idVendedor:number;
-  private fecha:Date;// o string??
-  private calificacion: number;
+  id:number;
+  idUsuario:number;
+  idVendedor:number;
+  fecha:Date;// o string??
+  calificacion: number;
   
-  public getId():number{
+  getId():number{
     return this.id;
   }
-  public getIdUsuario():number{
+  getIdUsuario():number{
     return this.idUsuario;
   }
-  public getIdVendedor():number{
+  getIdVendedor():number{
     return this.idVendedor
   }
-  public getFecha():Date{
+  getFecha():Date{
     return this.fecha
   }
-  public getCalificacion():number{
+  getCalificacion():number{
     return this.calificacion;
   }
 }
