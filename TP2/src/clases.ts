@@ -156,11 +156,11 @@ export class Usuario extends Tabla{
 
   static async get(){
     return new Promise(function (resolve, reject){
-      Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios "+ Usuario.Query(), function (error, results, fields){
+      Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios"+ Usuario.Query(), function (error, results, fields){
         if (error) throw error;
         let users: Array<Usuario> = new Array();
         results.forEach(x => {
-          products.push(x.id ,x.username, x.saldo, x. calificacion_vendedor, x. calificacion_comprador);
+          users.push(x.id ,x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador);
         });
         this.query = " ";
         resolve(users);
@@ -201,6 +201,21 @@ export class Favorito extends Tabla{
       });
     });
   }
+
+  static async get(){
+    return new Promise(function (resolve, reject){
+      Favorito.Conexion().query("select id, idUsuario, idProducto from favoritos"+ Favorito.Query(), function (error, results, fields){
+        if (error) throw error;
+        let favs: Array<Favorito> = new Array();
+        results.forEach(x => {
+          favs.push(x.id ,x.idUsuario, x.idProducto);
+        });
+        this.query = " ";
+        resolve(favs);
+      });
+    });
+  }
+
 }
 
 export class Compra extends Tabla{
