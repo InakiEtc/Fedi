@@ -68,6 +68,10 @@ var Tabla = /** @class */ (function () {
     Tabla.getQuery = function () {
         return this.query;
     };
+    Tabla.borrarQuery = function () {
+        this.query = " ";
+        return this.query;
+    };
     Tabla.get = function () {
         return null;
     };
@@ -152,7 +156,7 @@ var Producto = /** @class */ (function (_super) {
                             results.forEach(function (x) {
                                 products.push(new Producto(x.id, x.nombre, x.vendedor, x.precio, x.stock, x.usado));
                             });
-                            this.query = " ";
+                            Producto.borrarQuery();
                             resolve(products);
                         });
                     })];
@@ -211,9 +215,9 @@ var Usuario = /** @class */ (function (_super) {
                                 throw error;
                             var users = new Array();
                             results.forEach(function (x) {
-                                users.push(x.id, x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador);
+                                users.push(new Usuario(x.id, x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador));
                             });
-                            this.query = " ";
+                            Usuario.borrarQuery();
                             resolve(users);
                         });
                     })];
@@ -264,9 +268,9 @@ var Favorito = /** @class */ (function (_super) {
                                 throw error;
                             var favs = new Array();
                             results.forEach(function (x) {
-                                favs.push(x.id, x.id_usuario, x.id_producto);
+                                favs.push(new Favorito(x.id, x.id_usuario, x.id_producto));
                             });
-                            this.query = " ";
+                            Favorito.borrarQuery();
                             resolve(favs);
                         });
                     })];
@@ -333,9 +337,9 @@ var Compra = /** @class */ (function (_super) {
                                 throw error;
                             var buys = new Array();
                             results.forEach(function (x) {
-                                buys.push(x.id, x.id_usuario, x.id_producto, x.cantidad, x.fecha, x.comprador_calificador, x.vendedor_calificado);
+                                buys.push(new Compra(x.id, x.id_usuario, x.id_producto, x.cantidad, x.fecha, x.comprador_calificador, x.vendedor_calificado));
                             });
-                            this.query = " ";
+                            Compra.borrarQuery();
                             resolve(buys);
                         });
                     })];
@@ -394,9 +398,9 @@ var CalificacionVendedor = /** @class */ (function (_super) {
                                 throw error;
                             var seller = new Array();
                             results.forEach(function (x) {
-                                seller.push(x.id, x.id_comprador, x.id_vendedor, x.fecha, x.calificacion);
+                                seller.push(new CalificacionVendedor(x.id, x.id_comprador, x.id_vendedor, x.fecha, x.calificacion));
                             });
-                            this.query = " ";
+                            CalificacionVendedor.borrarQuery();
                             resolve(seller);
                         });
                     })];
@@ -455,9 +459,9 @@ var CalificacionComprador = /** @class */ (function (_super) {
                                 throw error;
                             var buyer = new Array();
                             results.forEach(function (x) {
-                                buyer.push(x.id, x.id_comprador, x.id_vendedor, x.calificacion, x.fecha);
+                                buyer.push(new CalificacionComprador(x.id, x.id_comprador, x.id_vendedor, x.calificacion, x.fecha));
                             });
-                            this.query = " ";
+                            CalificacionComprador.borrarQuery();
                             resolve(buyer);
                         });
                     })];

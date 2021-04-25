@@ -60,39 +60,47 @@ app.listen(port, function () {
 app.get('/', function (req, res) {
     res.send('prende eso?');
 });
-app.get('/productos', function (req, res) {
-    var sentencia = "select * from productos ";
-    var busqueda = req.param('busqueda');
-    var orden = req.param('orden');
-    var usado = req.param('usado');
-    if (usado != null) {
-        sentencia = sentencia + 'where usado = ' + usado;
-    }
-    if (busqueda != null && usado == null) {
-        busqueda = '%' + busqueda + '%';
-        sentencia = sentencia + 'where nombre like ' + "'" + busqueda + "'";
-    }
-    if (busqueda != null && usado != null) {
-        busqueda = '%' + busqueda + '%';
-        sentencia = sentencia + ' and nombre like ' + "'" + busqueda + "'";
-    }
-    if (orden != null) {
-        sentencia = sentencia + ' order by ' + orden + ' asc';
-    }
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        res.json(results);
+app.get('/productos', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var busqueda, orden, usado, p;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                busqueda = req.param('busqueda');
+                orden = req.param('orden');
+                usado = req.param('usado');
+                if (usado != null) {
+                    p = clases_1.Producto.where('usado', '=', usado);
+                }
+                if (busqueda != null) {
+                    busqueda = '"%' + busqueda + '%"';
+                    p = clases_1.Producto.where('nombre', ' like ', busqueda);
+                }
+                if (orden != null) {
+                    p = clases_1.Producto.orderby(orden, 'asc');
+                }
+                return [4 /*yield*/, clases_1.Producto.get()];
+            case 1:
+                p = _a.sent();
+                res.json(p);
+                return [2 /*return*/];
+        }
     });
-});
+}); });
 app.route('/usuarios/:id_usuario/fav')
     .get(function (req, res) {
-    var id = req.param('id_usuario');
-    var sentencia = "select * from favoritos where id_usuario = " + id + "";
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        res.json(results);
+    return __awaiter(this, void 0, void 0, function () {
+        var id, f;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    id = req.param('id_usuario');
+                    return [4 /*yield*/, clases_1.Favorito.where('id_usuario', '=', id).get()];
+                case 1:
+                    f = _a.sent();
+                    res.json(f);
+                    return [2 /*return*/];
+            }
+        });
     });
 })
     .post(function (req, res) {
@@ -126,12 +134,19 @@ app.route('/usuarios/:id_usuario/fav')
 });
 app.route('/usuarios/:id_usuario/compras')
     .get(function (req, res) {
-    var id = req.param('id_usuario');
-    var sentencia = "select compras.* from usuarios inner join compras on usuarios.id = compras.id_usuario where id_usuario = " + id + "";
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        res.json(results);
+    return __awaiter(this, void 0, void 0, function () {
+        var id, c;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    id = req.param('id_usuario');
+                    return [4 /*yield*/, clases_1.Compra.where('id_usuario', '=', id).get()];
+                case 1:
+                    c = _a.sent();
+                    res.json(c);
+                    return [2 /*return*/];
+            }
+        });
     });
 })
     .post(function (req, res) {
@@ -160,15 +175,3 @@ app.route('/usuarios/:id_usuario/compras')
         }
     });
 });
-app.get('/p', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var p;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, clases_1.Producto.where('precio', '<', '1000').get()];
-            case 1:
-                p = _a.sent();
-                res.json(p);
-                return [2 /*return*/];
-        }
-    });
-}); });

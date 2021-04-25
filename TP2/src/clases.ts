@@ -17,6 +17,11 @@ abstract class Tabla{
     return this.query;
   }
 
+  static borrarQuery():String{
+    this.query = " ";
+    return this.query;
+  }
+
   static get(){
     return null;
   }
@@ -104,10 +109,10 @@ export class Producto extends Tabla{
         results.forEach(x => {
           products.push(new Producto(x.id ,x.nombre, x.vendedor, x.precio, x.stock, x.usado));
         });
-        this.query = " ";
+        Producto.borrarQuery();
         resolve(products);
       });
-    });
+    });        
   }
 }
 
@@ -161,7 +166,7 @@ export class Usuario extends Tabla{
         results.forEach(x => {
           users.push(new Usuario(x.id ,x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador));
         });
-        this.query = " ";
+        Usuario.borrarQuery();
         resolve(users);
       });
     });
@@ -208,7 +213,7 @@ export class Favorito extends Tabla{
         results.forEach(x => {
           favs.push(new Favorito(x.id ,x.id_usuario, x.id_producto));
         });
-        this.query = " ";
+        Favorito.borrarQuery();
         resolve(favs);
       });
     });
@@ -276,7 +281,7 @@ export class Compra extends Tabla{
         results.forEach(x => {
           buys.push(new Compra(x.id,x.id_usuario,x.id_producto,x.cantidad,x.fecha,x.comprador_calificador,x.vendedor_calificado));
         });
-        this.query = " ";
+        Compra.borrarQuery();
         resolve(buys);
       });
     });
@@ -333,7 +338,7 @@ export class CalificacionVendedor extends Tabla{
           results.forEach(x => {
             seller.push(new CalificacionVendedor(x.id,x.id_comprador,x.id_vendedor, x.fecha,x.calificacion));
           });
-          this.query = " ";
+          CalificacionVendedor.borrarQuery();
           resolve(seller);
         });
       });
@@ -390,7 +395,7 @@ export class CalificacionComprador extends Tabla{
           results.forEach(x => {
             buyer.push(new CalificacionComprador(x.id,x.id_comprador,x.id_vendedor,x.calificacion,x.fecha));
           });
-          this.query = " ";
+          CalificacionComprador.borrarQuery();
           resolve(buyer);
         });
       });

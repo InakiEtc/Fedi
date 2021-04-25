@@ -1,10 +1,10 @@
-import {Producto, Usuario, Favorito, Compra, CalificacionComprador, CalificacionVendedor  } from "./clases";
+import {Producto, Usuario, Favorito, Compra, CalificacionComprador, CalificacionVendedor} from "./clases";
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'pelaroot',//'alumnoipm',
+  password : 'pelaroot',
   database : 'ecommerce'
 });
  
@@ -28,42 +28,32 @@ app.get('/', (req, res) => {
   res.send('prende eso?');
 })
 
-app.get('/productos', (req, res) => {
-  var sentencia = "select * from productos ";
+app.get('/productos', async(req, res) => {
   var busqueda = req.param('busqueda');
   var orden = req.param('orden');
   var usado = req.param('usado');
+  var p;
 
   if(usado != null){
-    sentencia = sentencia + 'where usado = '+ usado;
+    p =  Producto.where('usado','=',usado);
   }
-  if(busqueda != null && usado == null){
-    busqueda = '%'+busqueda+'%';
-    sentencia = sentencia + 'where nombre like '+ "'" +busqueda+ "'" ;
-  }
-  if(busqueda != null && usado != null){
-    busqueda = '%'+busqueda+'%';
-    sentencia = sentencia + ' and nombre like '+ "'" +busqueda+ "'" ;
+  if(busqueda != null){
+    busqueda = '"%'+busqueda+'%"';
+    p =  Producto.where('nombre',' like ',busqueda);
   }
   if(orden != null){
-    sentencia = sentencia + ' order by '+ orden +' asc';
+    p =  Producto.orderby(orden,'asc');
   }
-
-  connection.query(sentencia, function (error, results, fields){
-    if (error) throw error;
-      res.json(results);
-  });
+  p = await Producto.get();
+  res.json(p);
 })
 
 app.route('/usuarios/:id_usuario/fav')
-  .get(function (req, res) {
+  .get(async function (req, res) {
     var id = req.param('id_usuario');
-    var sentencia = "select * from favoritos where id_usuario = "+id+"";
-    connection.query(sentencia, function (error, results, fields){
-      if (error) throw error;
-        res.json(results);
-    })
-
+    var f;
+    f = await Favorito.where('id_usuario','=',id).get();
+    res.json(f);
   })
   .post(function (req, res) {
     var id = req.param('id_usuario');
@@ -96,13 +86,11 @@ app.route('/usuarios/:id_usuario/fav')
   });
 
   app.route('/usuarios/:id_usuario/compras')
-  .get(function (req, res){
+  .get(async function (req, res){
     var id = req.param('id_usuario');
-    var sentencia = "select compras.* from usuarios inner join compras on usuarios.id = compras.id_usuario where id_usuario = "+id+"";
-    connection.query(sentencia, function (error, results, fields){
-      if (error) throw error;
-        res.json(results);
-    })
+    var c;
+    c = await Compra.where('id_usuario','=',id).get();
+    res.json(c);
   })
   .post(function (req, res) {
     var id = req.param('id_usuario');
