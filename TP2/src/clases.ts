@@ -153,6 +153,21 @@ export class Usuario extends Tabla{
       });
     });
   }
+
+  static async get(){
+    return new Promise(function (resolve, reject){
+      Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios "+ Usuario.Query(), function (error, results, fields){
+        if (error) throw error;
+        let users: Array<Usuario> = new Array();
+        results.forEach(x => {
+          products.push(x.id ,x.username, x.saldo, x. calificacion_vendedor, x. calificacion_comprador);
+        });
+        this.query = " ";
+        resolve(users);
+      });
+    });
+  }
+
 }
 
 export class Favorito extends Tabla{
