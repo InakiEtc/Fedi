@@ -164,7 +164,7 @@ app.get('/prueba', function (req, res) { return __awaiter(void 0, void 0, void 0
     var p;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, clases_1.Producto.find(1)];
+            case 0: return [4 /*yield*/, clases_1.Producto.where('precio', '>', '1000').where('usado', '=', '1').orderby('precio', 'desc').get()];
             case 1:
                 p = _a.sent();
                 res.json(p);

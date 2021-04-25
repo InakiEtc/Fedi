@@ -131,7 +131,7 @@ app.route('/usuarios/:id_usuario/fav')
   })
 
   app.get('/prueba', async(req, res) => {
-    let p;
-    p = await Producto.find(1);
+    let p: Set<Producto>;
+    p = await Producto.where('precio','>','1000').where('usado','=','1').orderby('precio','desc').get();
     res.json(p);
   })

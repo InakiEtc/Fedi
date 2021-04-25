@@ -68,11 +68,31 @@ var Tabla = /** @class */ (function () {
     Tabla.Query = function () {
         return this.query;
     };
+    Tabla.get = function () {
+        return null;
+    };
+    Tabla.where = function (atributo, condicion, valor) {
+        if (this.Query().includes("where")) {
+            this.query = this.query + " and ";
+            this.query = this.query + atributo;
+            this.query = this.query + condicion;
+            this.query = this.query + valor;
+        }
+        else {
+            this.query = this.query + " where ";
+            this.query = this.query + atributo;
+            this.query = this.query + condicion;
+            this.query = this.query + valor;
+        }
+        return this;
+    };
+    Tabla.orderby = function (atributo, tipo) {
+        this.query = this.query + " order by ";
+        this.query = this.query + atributo + " ";
+        this.query = this.query + tipo;
+        return this;
+    };
     Tabla.prototype.save = function () {
-    };
-    Tabla.prototype.where = function (atributo, condcion, valor) {
-    };
-    Tabla.prototype.orderby = function (atributo, tipo) {
     };
     Tabla.query = " ";
     return Tabla;
@@ -132,6 +152,7 @@ var Producto = /** @class */ (function (_super) {
                             results.forEach(function (x) {
                                 products.push(x.id, x.nombre, x.vendedor, x.precio, x.stock, x.usado);
                             });
+                            this.query = " ";
                             resolve(products);
                         });
                     })];
@@ -167,6 +188,20 @@ var Usuario = /** @class */ (function (_super) {
     Usuario.prototype.getCalificacionComprador = function () {
         return this.calificacion_comprador;
     };
+    Usuario.find = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Usuario.Conexion().query('select * from usuarios where id = ' + id, function (error, results, fields) {
+                            if (error)
+                                reject(error);
+                            var u = new Usuario(results[0].id, results[0].username, results[0].saldo, results[0].calificacion_vendedor, results[0].calificacion_comprador);
+                            resolve(u);
+                        });
+                    })];
+            });
+        });
+    };
     return Usuario;
 }(Tabla));
 exports.Usuario = Usuario;
@@ -187,6 +222,20 @@ var Favorito = /** @class */ (function (_super) {
     };
     Favorito.prototype.getIdProducto = function () {
         return this.idProducto;
+    };
+    Favorito.find = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Favorito.Conexion().query('select * from favoritos where id = ' + id, function (error, results, fields) {
+                            if (error)
+                                reject(error);
+                            var f = new Favorito(results[0].id, results[0].idUsuario, results[0].idProducto);
+                            resolve(f);
+                        });
+                    })];
+            });
+        });
     };
     return Favorito;
 }(Tabla));
@@ -225,15 +274,29 @@ var Compra = /** @class */ (function (_super) {
     Compra.prototype.getVendedorCalificado = function () {
         return this.vendedorCalificado;
     };
+    Compra.find = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Compra.Conexion().query('select * from compras where id = ' + id, function (error, results, fields) {
+                            if (error)
+                                reject(error);
+                            var c = new Compra(results[0].id, results[0].idUsuario, results[0].idProducto, results[0].cantidad, results[0].fecha, results[0].compradorCalificado, results[0].vendedorCalificado);
+                            resolve(c);
+                        });
+                    })];
+            });
+        });
+    };
     return Compra;
 }(Tabla));
 exports.Compra = Compra;
 var CalificacionVendedor = /** @class */ (function (_super) {
     __extends(CalificacionVendedor, _super);
-    function CalificacionVendedor(id, idUsuario, idVendedor, fecha, calificacion) {
+    function CalificacionVendedor(id, idComprador, idVendedor, fecha, calificacion) {
         var _this = _super.call(this) || this;
         _this.id = id;
-        _this.idUsuario = idUsuario;
+        _this.idComprador = idComprador;
         _this.idVendedor = idVendedor;
         _this.fecha = fecha;
         _this.calificacion = calificacion;
@@ -243,7 +306,7 @@ var CalificacionVendedor = /** @class */ (function (_super) {
         return this.id;
     };
     CalificacionVendedor.prototype.getIdUsuario = function () {
-        return this.idUsuario;
+        return this.idComprador;
     };
     CalificacionVendedor.prototype.getIdVendedor = function () {
         return this.idVendedor;
@@ -254,15 +317,29 @@ var CalificacionVendedor = /** @class */ (function (_super) {
     CalificacionVendedor.prototype.getCalificacion = function () {
         return this.calificacion;
     };
+    CalificacionVendedor.find = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        CalificacionVendedor.Conexion().query('select * from calificaciones_vendedores where id = ' + id, function (error, results, fields) {
+                            if (error)
+                                reject(error);
+                            var cv = new CalificacionVendedor(results[0].id, results[0].idComprador, results[0].idVendedor, results[0].calificacion, results[0].fecha);
+                            resolve(cv);
+                        });
+                    })];
+            });
+        });
+    };
     return CalificacionVendedor;
 }(Tabla));
 exports.CalificacionVendedor = CalificacionVendedor;
 var CalificacionComprador = /** @class */ (function (_super) {
     __extends(CalificacionComprador, _super);
-    function CalificacionComprador(id, idUsuario, idVendedor, fecha, calificacion) {
+    function CalificacionComprador(id, idComprador, idVendedor, fecha, calificacion) {
         var _this = _super.call(this) || this;
         _this.id = id;
-        _this.idUsuario = idUsuario;
+        _this.idComprador = idComprador;
         _this.idVendedor = idVendedor;
         _this.fecha = fecha;
         _this.calificacion = calificacion;
@@ -272,7 +349,7 @@ var CalificacionComprador = /** @class */ (function (_super) {
         return this.id;
     };
     CalificacionComprador.prototype.getIdUsuario = function () {
-        return this.idUsuario;
+        return this.idComprador;
     };
     CalificacionComprador.prototype.getIdVendedor = function () {
         return this.idVendedor;
@@ -282,6 +359,20 @@ var CalificacionComprador = /** @class */ (function (_super) {
     };
     CalificacionComprador.prototype.getCalificacion = function () {
         return this.calificacion;
+    };
+    CalificacionComprador.find = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        CalificacionComprador.Conexion().query('select * from calificaciones_compradores where id = ' + id, function (error, results, fields) {
+                            if (error)
+                                reject(error);
+                            var cc = new CalificacionComprador(results[0].id, results[0].idComprador, results[0].idVendedor, results[0].calificacion, results[0].fecha);
+                            resolve(cc);
+                        });
+                    })];
+            });
+        });
     };
     return CalificacionComprador;
 }(Tabla));

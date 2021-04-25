@@ -17,13 +17,35 @@ abstract class Tabla{
     return this.query;
   }
 
-  save(){
+  static get(){
+    return null;
   }
   
-  where(atributo:string ,condcion:string, valor:string){
+  static where(atributo:string ,condicion:string, valor:string){
+    if(this.Query().includes("where")){
+      this.query = this.query +" and ";
+      this.query = this.query + atributo;
+      this.query = this.query + condicion;
+      this.query = this.query + valor;
+    }
+    else{
+      this.query = this.query +" where ";
+      this.query = this.query + atributo;
+      this.query = this.query + condicion;
+      this.query = this.query + valor;
+    }
+    return this;
   }
 
-  orderby(atributo:String, tipo:String){  
+  static orderby(atributo:string, tipo:string){  
+    this.query = this.query +" order by ";
+    this.query = this.query + atributo +" ";
+    this.query = this.query + tipo;
+
+    return this;
+  }
+
+  save(){
   }
 }
 
@@ -82,6 +104,7 @@ export class Producto extends Tabla{
         results.forEach(x => {
           products.push(x.id ,x.nombre, x.vendedor, x.precio, x.stock, x.usado);
         });
+        this.query = " ";
         resolve(products);
       });
     });
@@ -120,6 +143,16 @@ export class Usuario extends Tabla{
   getCalificacionComprador():number{
     return this.calificacion_comprador;
   }
+
+  static async find(id:number){
+    return new Promise(function (resolve, reject){
+      Usuario.Conexion().query('select * from usuarios where id = '+id, function (error, results, fields){
+        if (error) reject(error);
+        let u = new Usuario(results[0].id,results[0].username,results[0].saldo,results[0].calificacion_vendedor,results[0].calificacion_comprador);
+        resolve(u);
+      });
+    });
+  }
 }
 
 export class Favorito extends Tabla{
@@ -142,6 +175,16 @@ export class Favorito extends Tabla{
   }
   getIdProducto():number{
     return this.idProducto;
+  }
+
+  static async find(id:number){
+    return new Promise(function (resolve, reject){
+      Favorito.Conexion().query('select * from favoritos where id = '+id, function (error, results, fields){
+        if (error) reject(error);
+        let f = new Favorito(results[0].id,results[0].idUsuario,results[0].idProducto);
+        resolve(f);
+      });
+    });
   }
 }
 
@@ -187,19 +230,29 @@ export class Compra extends Tabla{
   getVendedorCalificado():number{
     return this.vendedorCalificado;
   }
+
+  static async find(id:number){
+    return new Promise(function (resolve, reject){
+      Compra.Conexion().query('select * from compras where id = '+id, function (error, results, fields){
+        if (error) reject(error);
+        let c = new Compra(results[0].id,results[0].idUsuario,results[0].idProducto,results[0].cantidad,results[0].fecha,results[0].compradorCalificado,results[0].vendedorCalificado);
+        resolve(c);
+      });
+    });
+  }
 }
 
 export class CalificacionVendedor extends Tabla{
   id:number;
-  idUsuario:number;
+  idComprador:number;
   idVendedor:number;
   fecha: String;
   calificacion: number;
 
-  constructor(id:number, idUsuario:number, idVendedor:number, fecha: String, calificacion: number){
+  constructor(id:number, idComprador:number, idVendedor:number, fecha: String, calificacion: number){
     super();
     this.id = id;
-    this.idUsuario = idUsuario;
+    this.idComprador = idComprador;
     this.idVendedor = idVendedor;
     this.fecha = fecha;
     this.calificacion = calificacion; 
@@ -209,7 +262,7 @@ export class CalificacionVendedor extends Tabla{
     return this.id;
   }
   getIdUsuario():number{
-    return this.idUsuario;
+    return this.idComprador;
   }
   getIdVendedor():number{
     return this.idVendedor;
@@ -220,19 +273,29 @@ export class CalificacionVendedor extends Tabla{
   getCalificacion():number{
     return this.calificacion;
   }
+
+  static async find(id:number){
+    return new Promise(function (resolve, reject){
+      CalificacionVendedor.Conexion().query('select * from calificaciones_vendedores where id = '+id, function (error, results, fields){
+        if (error) reject(error);
+        let cv = new CalificacionVendedor(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].calificacion,results[0].fecha);
+        resolve(cv);
+      });
+    });
+  }
 }
 
 export class CalificacionComprador extends Tabla{
   id:number;
-  idUsuario:number;
+  idComprador:number;
   idVendedor:number;
   fecha:string;
   calificacion: number;
 
-  constructor(id:number, idUsuario:number, idVendedor:number, fecha:string, calificacion: number){
+  constructor(id:number, idComprador:number, idVendedor:number, fecha:string, calificacion: number){
     super();
     this.id = id;
-    this.idUsuario = idUsuario;
+    this.idComprador = idComprador;
     this.idVendedor = idVendedor;
     this.fecha = fecha;
     this.calificacion = calificacion; 
@@ -242,7 +305,7 @@ export class CalificacionComprador extends Tabla{
     return this.id;
   }
   getIdUsuario():number{
-    return this.idUsuario;
+    return this.idComprador;
   }
   getIdVendedor():number{
     return this.idVendedor;
@@ -252,5 +315,15 @@ export class CalificacionComprador extends Tabla{
   }
   getCalificacion():number{
     return this.calificacion;
+  }
+
+  static async find(id:number){
+    return new Promise(function (resolve, reject){
+      CalificacionComprador.Conexion().query('select * from calificaciones_compradores where id = '+id, function (error, results, fields){
+        if (error) reject(error);
+        let cc = new CalificacionComprador(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].calificacion,results[0].fecha);
+        resolve(cc);
+      });
+    });
   }
 }
