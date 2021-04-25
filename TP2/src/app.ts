@@ -1,4 +1,4 @@
-import { Producto} from "./clases";
+import {Producto, Usuario, Favorito, Compra, CalificacionComprador, CalificacionVendedor  } from "./clases";
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
@@ -67,7 +67,7 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .post(function (req, res) {
     var id = req.param('id_usuario');
-    var id_p = req.param('idP');
+    var id_p = req.body.idP;
 
     var sentencia = "select id_producto from favoritos where id_usuario = "+id+"";
     connection.query(sentencia, function (error, results, fields){
@@ -87,7 +87,7 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .delete(function (req,res,next){
     var id = req.param('id_usuario');
-    var id_producto = req.param('idP');
+    var id_producto = req.body.idP;
     var sentencia = "delete from favoritos where id_usuario = "+id+" and id_producto ="+id_producto+" ";
 
     connection.query(sentencia, function (error, results, fields){
@@ -106,8 +106,8 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .post(function (req, res) {
     var id = req.param('id_usuario');
-    var idProducto = req.param('idP');
-    var cant = req.param('cantidad');
+    var idProducto = req.body.idP;
+    var cant = req.body.cantidad;
 
     var sentencia = "select stock as stockP from productos where id="+idProducto+"";
     connection.query(sentencia, function (error, results, fields){
@@ -131,5 +131,7 @@ app.route('/usuarios/:id_usuario/fav')
   })
 
   app.get('/prueba', async(req, res) => {
-    Producto p = await Producto.find(1);
+    let p;
+    p = await Producto.find(1);
+    res.json(p);
   })

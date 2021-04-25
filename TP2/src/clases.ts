@@ -13,6 +13,10 @@ abstract class Tabla{
     return connection;
   }
 
+  static Query():String{
+    return this.query;
+  }
+
   save(){
   }
   
@@ -61,11 +65,10 @@ export class Producto extends Tabla{
   }
 
   static async find(id:number){
-    this.query = 'select * from productos where id = '+id;
     return new Promise(function (resolve, reject){
-      Producto.Conexion().query(this.query, function (error, results, fields){
+      Producto.Conexion().query('select * from productos where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        var p = new Producto(results[0].id,results[0].nombre,results[0].precio,results[0].vendedor,results[0].stock,results[0].usado);
+        let p = new Producto(results[0].id,results[0].nombre,results[0].precio,results[0].vendedor,results[0].stock,results[0].usado);
         resolve(p);
       });
     });
@@ -73,11 +76,11 @@ export class Producto extends Tabla{
 
   static async get(){
     return new Promise(function (resolve, reject){
-      Producto.Conexion().query(/*query*/, function (error, results, fields){
+      Producto.Conexion().query("select id, nombre, vendedor, precio, stock, usado from productos"+ Producto.Query(), function (error, results, fields){
         if (error) throw error;
-        let products: Set<Producto> = new Set();
+        let products: Array<Producto> = new Array();
         results.forEach(x => {
-          products.push(/*algo*/);
+          products.push(x.id ,x.nombre, x.vendedor, x.precio, x.stock, x.usado);
         });
         resolve(products);
       });
