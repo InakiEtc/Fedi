@@ -270,6 +270,21 @@ export class Compra extends Tabla{
       });
     });
   }
+
+static async get(){
+    return new Promise(function (resolve, reject){
+      Compra.Conexion().query("select id, idUsuario, idProducto, cantidad, fecha, compradorCalificado, vendedorCalificado from compras"+ Compra.Query(), function (error, results, fields){
+        if (error) throw error;
+        let buys: Array<Compras> = new Array();
+        results.forEach(x => {
+          buys.push(x.id,x.idUsuario,x.idProducto,x.cantidad,x.fecha,x.compradorCalificado,x.vendedorCalificado);
+        });
+        this.query = " ";
+        resolve(buys);
+      });
+    });
+  }
+
 }
 
 export class CalificacionVendedor extends Tabla{
@@ -308,11 +323,24 @@ export class CalificacionVendedor extends Tabla{
     return new Promise(function (resolve, reject){
       CalificacionVendedor.Conexion().query('select * from calificaciones_vendedores where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        let cv = new CalificacionVendedor(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].calificacion,results[0].fecha);
+        let cv = new CalificacionVendedor(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].fecha, results[0].calificacion);
         resolve(cv);
       });
     });
   }
+
+static async get(){
+    return new Promise(function (resolve, reject){
+      CailificacionVendedor.Conexion().query("select id,idComprador,idVendedor,calificacion,fecha from calificaciones_vendedores"+ CalificacionVendedor.Query(), function (error, results, fields){
+        if (error) throw error;
+        let seller: Array<CalificacionVendedor> = new Array();
+        results.forEach(x => {
+          seller.push(x.id,x.idComprador,x.idVendedor, x.fecha,x.calificacion);
+        });
+        this.query = " ";
+        resolve(seller);
+      });
+    });
 }
 
 export class CalificacionComprador extends Tabla{
@@ -356,4 +384,18 @@ export class CalificacionComprador extends Tabla{
       });
     });
   }
+
+static async get(){
+    return new Promise(function (resolve, reject){
+      CailificacionComprador.Conexion().query("select id,idComprador,idVendedor,calificacion,fecha from calificaciones_compradores"+ CalificacionComprador.Query(), function (error, results, fields){
+        if (error) throw error;
+        let buyer: Array<CalificacionComprador> = new Array();
+        results.forEach(x => {
+          buyer.push(x.id,x.idComprador,x.idVendedor,x.calificacion,x.fecha);
+        });
+        this.query = " ";
+        resolve(buyer);
+      });
+    });
+
 }
