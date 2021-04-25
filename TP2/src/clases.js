@@ -65,14 +65,14 @@ var Tabla = /** @class */ (function () {
         });
         return connection;
     };
-    Tabla.Query = function () {
+    Tabla.getQuery = function () {
         return this.query;
     };
     Tabla.get = function () {
         return null;
     };
     Tabla.where = function (atributo, condicion, valor) {
-        if (this.Query().includes("where")) {
+        if (this.getQuery().includes("where")) {
             this.query = this.query + " and ";
             this.query = this.query + atributo;
             this.query = this.query + condicion;
@@ -145,7 +145,7 @@ var Producto = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        Producto.Conexion().query("select id, nombre, vendedor, precio, stock, usado from productos" + Producto.Query(), function (error, results, fields) {
+                        Producto.Conexion().query("select id, nombre, vendedor, precio, stock, usado from productos" + Producto.getQuery(), function (error, results, fields) {
                             if (error)
                                 throw error;
                             var products = new Array();
@@ -202,6 +202,24 @@ var Usuario = /** @class */ (function (_super) {
             });
         });
     };
+    Usuario.get = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios" + Usuario.getQuery(), function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            var users = new Array();
+                            results.forEach(function (x) {
+                                users.push(x.id, x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador);
+                            });
+                            this.query = " ";
+                            resolve(users);
+                        });
+                    })];
+            });
+        });
+    };
     return Usuario;
 }(Tabla));
 exports.Usuario = Usuario;
@@ -230,8 +248,26 @@ var Favorito = /** @class */ (function (_super) {
                         Favorito.Conexion().query('select * from favoritos where id = ' + id, function (error, results, fields) {
                             if (error)
                                 reject(error);
-                            var f = new Favorito(results[0].id, results[0].idUsuario, results[0].idProducto);
+                            var f = new Favorito(results[0].id, results[0].id_usuario, results[0].id_producto);
                             resolve(f);
+                        });
+                    })];
+            });
+        });
+    };
+    Favorito.get = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Favorito.Conexion().query("select id, id_usuario, id_producto from favoritos" + Favorito.getQuery(), function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            var favs = new Array();
+                            results.forEach(function (x) {
+                                favs.push(x.id, x.id_usuario, x.id_producto);
+                            });
+                            this.query = " ";
+                            resolve(favs);
                         });
                     })];
             });
@@ -281,8 +317,26 @@ var Compra = /** @class */ (function (_super) {
                         Compra.Conexion().query('select * from compras where id = ' + id, function (error, results, fields) {
                             if (error)
                                 reject(error);
-                            var c = new Compra(results[0].id, results[0].idUsuario, results[0].idProducto, results[0].cantidad, results[0].fecha, results[0].compradorCalificado, results[0].vendedorCalificado);
+                            var c = new Compra(results[0].id, results[0].id_usuario, results[0].id_producto, results[0].cantidad, results[0].fecha, results[0].comprador_calificado, results[0].vendedor_calificado);
                             resolve(c);
+                        });
+                    })];
+            });
+        });
+    };
+    Compra.get = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Compra.Conexion().query("select id, id_usuario, id_producto, cantidad, fecha, comprador_calificado, vendedor_calificado from compras" + Compra.getQuery(), function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            var buys = new Array();
+                            results.forEach(function (x) {
+                                buys.push(x.id, x.id_usuario, x.id_producto, x.cantidad, x.fecha, x.comprador_calificador, x.vendedor_calificado);
+                            });
+                            this.query = " ";
+                            resolve(buys);
                         });
                     })];
             });
@@ -324,8 +378,26 @@ var CalificacionVendedor = /** @class */ (function (_super) {
                         CalificacionVendedor.Conexion().query('select * from calificaciones_vendedores where id = ' + id, function (error, results, fields) {
                             if (error)
                                 reject(error);
-                            var cv = new CalificacionVendedor(results[0].id, results[0].idComprador, results[0].idVendedor, results[0].calificacion, results[0].fecha);
+                            var cv = new CalificacionVendedor(results[0].id, results[0].id_comprador, results[0].id_vendedor, results[0].fecha, results[0].calificacion);
                             resolve(cv);
+                        });
+                    })];
+            });
+        });
+    };
+    CalificacionVendedor.get = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        CalificacionVendedor.Conexion().query("select id,id_comprador,id_vendedor,calificacion,fecha from calificaciones_vendedores" + CalificacionVendedor.getQuery(), function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            var seller = new Array();
+                            results.forEach(function (x) {
+                                seller.push(x.id, x.id_comprador, x.id_vendedor, x.fecha, x.calificacion);
+                            });
+                            this.query = " ";
+                            resolve(seller);
                         });
                     })];
             });
@@ -367,8 +439,26 @@ var CalificacionComprador = /** @class */ (function (_super) {
                         CalificacionComprador.Conexion().query('select * from calificaciones_compradores where id = ' + id, function (error, results, fields) {
                             if (error)
                                 reject(error);
-                            var cc = new CalificacionComprador(results[0].id, results[0].idComprador, results[0].idVendedor, results[0].calificacion, results[0].fecha);
+                            var cc = new CalificacionComprador(results[0].id, results[0].id_comprador, results[0].id_vendedor, results[0].calificacion, results[0].fecha);
                             resolve(cc);
+                        });
+                    })];
+            });
+        });
+    };
+    CalificacionComprador.get = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        CalificacionComprador.Conexion().query("select id,id_comprador,id_vendedor,calificacion,fecha from calificaciones_compradores" + CalificacionComprador.getQuery(), function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            var buyer = new Array();
+                            results.forEach(function (x) {
+                                buyer.push(x.id, x.id_comprador, x.id_vendedor, x.calificacion, x.fecha);
+                            });
+                            this.query = " ";
+                            resolve(buyer);
                         });
                     })];
             });

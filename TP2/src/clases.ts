@@ -13,7 +13,7 @@ abstract class Tabla{
     return connection;
   }
 
-  static Query():String{
+  static getQuery():String{
     return this.query;
   }
 
@@ -22,7 +22,7 @@ abstract class Tabla{
   }
   
   static where(atributo:string ,condicion:string, valor:string){
-    if(this.Query().includes("where")){
+    if(this.getQuery().includes("where")){
       this.query = this.query +" and ";
       this.query = this.query + atributo;
       this.query = this.query + condicion;
@@ -98,7 +98,7 @@ export class Producto extends Tabla{
 
   static async get(){
     return new Promise(function (resolve, reject){
-      Producto.Conexion().query("select id, nombre, vendedor, precio, stock, usado from productos"+ Producto.Query(), function (error, results, fields){
+      Producto.Conexion().query("select id, nombre, vendedor, precio, stock, usado from productos"+ Producto.getQuery(), function (error, results, fields){
         if (error) throw error;
         let products: Array<Producto> = new Array();
         results.forEach(x => {
@@ -109,7 +109,6 @@ export class Producto extends Tabla{
       });
     });
   }
-
 }
 
 export class Usuario extends Tabla{
@@ -156,7 +155,7 @@ export class Usuario extends Tabla{
 
   static async get(){
     return new Promise(function (resolve, reject){
-      Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios"+ Usuario.Query(), function (error, results, fields){
+      Usuario.Conexion().query("select id, username, saldo, calificacion_vendedor, calificacion_comprador from usuarios"+ Usuario.getQuery(), function (error, results, fields){
         if (error) throw error;
         let users: Array<Usuario> = new Array();
         results.forEach(x => {
@@ -167,7 +166,6 @@ export class Usuario extends Tabla{
       });
     });
   }
-
 }
 
 export class Favorito extends Tabla{
@@ -196,7 +194,7 @@ export class Favorito extends Tabla{
     return new Promise(function (resolve, reject){
       Favorito.Conexion().query('select * from favoritos where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        let f = new Favorito(results[0].id,results[0].idUsuario,results[0].idProducto);
+        let f = new Favorito(results[0].id, results[0].id_usuario, results[0].id_producto);
         resolve(f);
       });
     });
@@ -204,18 +202,17 @@ export class Favorito extends Tabla{
 
   static async get(){
     return new Promise(function (resolve, reject){
-      Favorito.Conexion().query("select id, idUsuario, idProducto from favoritos"+ Favorito.Query(), function (error, results, fields){
+      Favorito.Conexion().query("select id, id_usuario, id_producto from favoritos"+ Favorito.getQuery(), function (error, results, fields){
         if (error) throw error;
         let favs: Array<Favorito> = new Array();
         results.forEach(x => {
-          favs.push(x.id ,x.idUsuario, x.idProducto);
+          favs.push(x.id ,x.id_usuario, x.id_producto);
         });
         this.query = " ";
         resolve(favs);
       });
     });
   }
-
 }
 
 export class Compra extends Tabla{
@@ -265,26 +262,25 @@ export class Compra extends Tabla{
     return new Promise(function (resolve, reject){
       Compra.Conexion().query('select * from compras where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        let c = new Compra(results[0].id,results[0].idUsuario,results[0].idProducto,results[0].cantidad,results[0].fecha,results[0].compradorCalificado,results[0].vendedorCalificado);
+        let c = new Compra(results[0].id,results[0].id_usuario,results[0].id_producto,results[0].cantidad,results[0].fecha,results[0].comprador_calificado,results[0].vendedor_calificado);
         resolve(c);
       });
     });
   }
 
-static async get(){
+  static async get(){
     return new Promise(function (resolve, reject){
-      Compra.Conexion().query("select id, idUsuario, idProducto, cantidad, fecha, compradorCalificado, vendedorCalificado from compras"+ Compra.Query(), function (error, results, fields){
+      Compra.Conexion().query("select id, id_usuario, id_producto, cantidad, fecha, comprador_calificado, vendedor_calificado from compras"+ Compra.getQuery(), function (error, results, fields){
         if (error) throw error;
-        let buys: Array<Compras> = new Array();
+        let buys: Array<Compra> = new Array();
         results.forEach(x => {
-          buys.push(x.id,x.idUsuario,x.idProducto,x.cantidad,x.fecha,x.compradorCalificado,x.vendedorCalificado);
+          buys.push(x.id,x.id_usuario,x.id_producto,x.cantidad,x.fecha,x.comprador_calificador,x.vendedor_calificado);
         });
         this.query = " ";
         resolve(buys);
       });
     });
   }
-
 }
 
 export class CalificacionVendedor extends Tabla{
@@ -323,24 +319,25 @@ export class CalificacionVendedor extends Tabla{
     return new Promise(function (resolve, reject){
       CalificacionVendedor.Conexion().query('select * from calificaciones_vendedores where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        let cv = new CalificacionVendedor(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].fecha, results[0].calificacion);
+        let cv = new CalificacionVendedor(results[0].id,results[0].id_comprador,results[0].id_vendedor,results[0].fecha, results[0].calificacion);
         resolve(cv);
       });
     });
   }
 
-static async get(){
-    return new Promise(function (resolve, reject){
-      CailificacionVendedor.Conexion().query("select id,idComprador,idVendedor,calificacion,fecha from calificaciones_vendedores"+ CalificacionVendedor.Query(), function (error, results, fields){
-        if (error) throw error;
-        let seller: Array<CalificacionVendedor> = new Array();
-        results.forEach(x => {
-          seller.push(x.id,x.idComprador,x.idVendedor, x.fecha,x.calificacion);
+  static async get(){
+      return new Promise(function (resolve, reject){
+        CalificacionVendedor.Conexion().query("select id,id_comprador,id_vendedor,calificacion,fecha from calificaciones_vendedores"+ CalificacionVendedor.getQuery(), function (error, results, fields){
+          if (error) throw error;
+          let seller: Array<CalificacionVendedor> = new Array();
+          results.forEach(x => {
+            seller.push(x.id,x.id_comprador,x.id_vendedor, x.fecha,x.calificacion);
+          });
+          this.query = " ";
+          resolve(seller);
         });
-        this.query = " ";
-        resolve(seller);
       });
-    });
+  }
 }
 
 export class CalificacionComprador extends Tabla{
@@ -379,23 +376,23 @@ export class CalificacionComprador extends Tabla{
     return new Promise(function (resolve, reject){
       CalificacionComprador.Conexion().query('select * from calificaciones_compradores where id = '+id, function (error, results, fields){
         if (error) reject(error);
-        let cc = new CalificacionComprador(results[0].id,results[0].idComprador,results[0].idVendedor,results[0].calificacion,results[0].fecha);
+        let cc = new CalificacionComprador(results[0].id,results[0].id_comprador,results[0].id_vendedor,results[0].calificacion,results[0].fecha);
         resolve(cc);
       });
     });
   }
 
-static async get(){
-    return new Promise(function (resolve, reject){
-      CailificacionComprador.Conexion().query("select id,idComprador,idVendedor,calificacion,fecha from calificaciones_compradores"+ CalificacionComprador.Query(), function (error, results, fields){
-        if (error) throw error;
-        let buyer: Array<CalificacionComprador> = new Array();
-        results.forEach(x => {
-          buyer.push(x.id,x.idComprador,x.idVendedor,x.calificacion,x.fecha);
+  static async get(){
+      return new Promise(function (resolve, reject){
+        CalificacionComprador.Conexion().query("select id,id_comprador,id_vendedor,calificacion,fecha from calificaciones_compradores"+ CalificacionComprador.getQuery(), function (error, results, fields){
+          if (error) throw error;
+          let buyer: Array<CalificacionComprador> = new Array();
+          results.forEach(x => {
+            buyer.push(x.id,x.id_comprador,x.id_vendedor,x.calificacion,x.fecha);
+          });
+          this.query = " ";
+          resolve(buyer);
         });
-        this.query = " ";
-        resolve(buyer);
       });
-    });
-
+  }
 }
