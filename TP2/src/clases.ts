@@ -102,7 +102,7 @@ export class Producto extends Tabla{
         if (error) throw error;
         let products: Array<Producto> = new Array();
         results.forEach(x => {
-          products.push(x.id ,x.nombre, x.vendedor, x.precio, x.stock, x.usado);
+          products.push(new Producto(x.id ,x.nombre, x.vendedor, x.precio, x.stock, x.usado));
         });
         this.query = " ";
         resolve(products);
@@ -159,7 +159,7 @@ export class Usuario extends Tabla{
         if (error) throw error;
         let users: Array<Usuario> = new Array();
         results.forEach(x => {
-          users.push(x.id ,x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador);
+          users.push(new Usuario(x.id ,x.username, x.saldo, x.calificacion_vendedor, x.calificacion_comprador));
         });
         this.query = " ";
         resolve(users);
@@ -206,7 +206,7 @@ export class Favorito extends Tabla{
         if (error) throw error;
         let favs: Array<Favorito> = new Array();
         results.forEach(x => {
-          favs.push(x.id ,x.id_usuario, x.id_producto);
+          favs.push(new Favorito(x.id ,x.id_usuario, x.id_producto));
         });
         this.query = " ";
         resolve(favs);
@@ -274,7 +274,7 @@ export class Compra extends Tabla{
         if (error) throw error;
         let buys: Array<Compra> = new Array();
         results.forEach(x => {
-          buys.push(x.id,x.id_usuario,x.id_producto,x.cantidad,x.fecha,x.comprador_calificador,x.vendedor_calificado);
+          buys.push(new Compra(x.id,x.id_usuario,x.id_producto,x.cantidad,x.fecha,x.comprador_calificador,x.vendedor_calificado));
         });
         this.query = " ";
         resolve(buys);
@@ -331,7 +331,7 @@ export class CalificacionVendedor extends Tabla{
           if (error) throw error;
           let seller: Array<CalificacionVendedor> = new Array();
           results.forEach(x => {
-            seller.push(x.id,x.id_comprador,x.id_vendedor, x.fecha,x.calificacion);
+            seller.push(new CalificacionVendedor(x.id,x.id_comprador,x.id_vendedor, x.fecha,x.calificacion));
           });
           this.query = " ";
           resolve(seller);
@@ -388,7 +388,7 @@ export class CalificacionComprador extends Tabla{
           if (error) throw error;
           let buyer: Array<CalificacionComprador> = new Array();
           results.forEach(x => {
-            buyer.push(x.id,x.id_comprador,x.id_vendedor,x.calificacion,x.fecha);
+            buyer.push(new CalificacionComprador(x.id,x.id_comprador,x.id_vendedor,x.calificacion,x.fecha));
           });
           this.query = " ";
           resolve(buyer);

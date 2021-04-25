@@ -150,7 +150,7 @@ var Producto = /** @class */ (function (_super) {
                                 throw error;
                             var products = new Array();
                             results.forEach(function (x) {
-                                products.push(x.id, x.nombre, x.vendedor, x.precio, x.stock, x.usado);
+                                products.push(new Producto(x.id, x.nombre, x.vendedor, x.precio, x.stock, x.usado));
                             });
                             this.query = " ";
                             resolve(products);
