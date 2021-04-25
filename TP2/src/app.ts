@@ -129,9 +129,3 @@ app.route('/usuarios/:id_usuario/fav')
       }
     })
   })
-
-  app.get('/prueba', async(req, res) => {
-    let p: Set<CalificacionVendedor>;
-    p = await CalificacionVendedor.where('calificacion','=','5').orderby('id','asc').get();
-    res.json(p);
-  })
