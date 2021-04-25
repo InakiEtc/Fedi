@@ -118,4 +118,21 @@ app.route('/usuarios/:id_usuario/fav')
     })
   })
 
+  app.route("/usuarios/:id_usuario/calificaciones")
+  .get(function (req, res){
+    let id = req.param('id_usuario');
+  
+    var cc;
+    var cv;
+
+    cc = CalificacionComprador.where('id_comprador','=',id).get();
+    cv = CalificacionVendedor.where('id_vendedor','=',id).get();
+
+    let sentencia = "select id_comprador , id_vendedor , calificacion , fecha from calificaciones_compradores where id = "+id+" union select id_comprador , id_vendedor , calificacion , fecha from calificaciones_vendedores where id = "+id+"";
+    connection.query(sentencia, function (error, results, fields){
+      if (error) throw error;
+        res.json(results);
+    })
+  })
+
 
