@@ -91,16 +91,13 @@ app.route('/usuarios/:id_usuario/fav')
 
     var p = await Producto.where('id','=',idProducto).get();
     var stock = p[0].stock;
-    
+
     if(stock >= cant  && idProducto != null){
-      var sentencia1 = "insert into compras values (null,"+id+","+idProducto+","+cant+",now(),0,0)";
-      connection.query(sentencia1, function (error, results, fields){
-        if (error) throw error;
-      })
-      var sentencia2 = "update productos set stock= "+(stock-cant)+" where id = "+idProducto+" ";
-      connection.query(sentencia2, function (error, results, fields){
-        if (error) throw error;
-      })
+      let cc = new Compra(null,id,idProducto,cant,'now()',0,0);
+      cc.save();
+      var p2 = await Producto.where('id','=',idProducto).get();
+      let pp = new Producto(idProducto,p2[0].nombre,p2[0].vendedor,p2[0].precio,stock-1,p2[0].usado);
+      pp.save();
     }
     else{
       console.log("No hay stock suficiente");
@@ -118,5 +115,41 @@ app.route('/usuarios/:id_usuario/fav')
 
     res.json(detalleCalifUser);
   })
+  .post(function (req, res) {
+    let id_usuario = req.params.id_usuario;
+    let id_calificante = req.body.id_calificante;
+    let id_operacion = req.body.id_operacion;
+    let id_calificacion = req.body.id_calificacion;
+    let id_vendedor = req.body.id_vendedor; 
+    let id_comprador = req.body.id_comprador;
+
+
+    connection.query('SELECT compras.id_usuario as id_comprador , vendedor as id_vendedor FROM productos INNER JOIN compras ON productos.id=id_producto WHERE compras.id = '+id_operacion+';', function (error, resultsQuery1, fields) {
+        if (error) throw error;
+        if(resultsQuery1[0].id_comprador==id_usuario){
+
+            connection.query("Insert into calificaciones_compradores values (null, "+id_usuario+","+resultsQuery1[0].id_vendedor+","+id_calificacion+", NOW());", function (error, results, field){
+              if(error){
+                throw error;
+            }
+            else{
+                res.send('InsertadE');
+            }
+
+            })
+        }
+        else {
+            connection.query("Insert into calificaciones_vendedores values (null, "+id_usuario+","+resultsQuery1[0].id_comprador+","+id_calificacion+", NOW());", function (error, results, field){
+              if(error){
+                throw error;
+            }
+            else{
+                res.send('InsertadE');
+            }
+            })
+        }
+    });
+})
+
 
 

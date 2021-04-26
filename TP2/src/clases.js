@@ -163,6 +163,26 @@ var Producto = /** @class */ (function (_super) {
             });
         });
     };
+    Producto.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, nombre, vendedor, precio, stock, usado;
+            return __generator(this, function (_a) {
+                id = this.id;
+                nombre = this.nombre;
+                vendedor = this.vendedor;
+                precio = this.precio;
+                stock = this.stock;
+                usado = this.usado;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Producto.Conexion().query("update productos set nombre = '" + nombre + "', precio = " + precio + ", stock = " + stock + ", vendedor = " + vendedor + ", usado = " + usado + " where id = " + id, function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            this.query = " ";
+                        });
+                    })];
+            });
+        });
+    };
     return Producto;
 }(Tabla));
 exports.Producto = Producto;
@@ -219,6 +239,25 @@ var Usuario = /** @class */ (function (_super) {
                             });
                             Usuario.borrarQuery();
                             resolve(users);
+                        });
+                    })];
+            });
+        });
+    };
+    Usuario.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, username, saldo, calificacion_vendedor, calificacion_comprador;
+            return __generator(this, function (_a) {
+                id = this.id;
+                username = this.username;
+                saldo = this.saldo;
+                calificacion_vendedor = this.calificacion_vendedor;
+                calificacion_comprador = this.calificacion_comprador;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Producto.Conexion().query("update usuarios set username = '" + username + "', saldo = " + saldo + ", calificacion_comprador = " + calificacion_comprador + ", calificacion_vendedor = " + calificacion_vendedor + " where id = " + id, function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            this.query = " ";
                         });
                     })];
             });
@@ -363,6 +402,27 @@ var Compra = /** @class */ (function (_super) {
             });
         });
     };
+    Compra.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, idUsuario, idProducto, cantidad, fecha, comprador_calificado, vendedor_calificado;
+            return __generator(this, function (_a) {
+                id = this.id;
+                idUsuario = this.idUsuario;
+                idProducto = this.idProducto;
+                cantidad = this.cantidad;
+                fecha = this.fecha;
+                comprador_calificado = this.compradorCalificado;
+                vendedor_calificado = this.vendedorCalificado;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Producto.Conexion().query("insert into compras values(" + id + ", " + idUsuario + ", " + idProducto + ", " + cantidad + ", " + fecha + ", " + comprador_calificado + ", " + vendedor_calificado + ");", function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            this.query = " ";
+                        });
+                    })];
+            });
+        });
+    };
     return Compra;
 }(Tabla));
 exports.Compra = Compra;
@@ -424,6 +484,34 @@ var CalificacionVendedor = /** @class */ (function (_super) {
             });
         });
     };
+    CalificacionVendedor.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, idComprador, idVendedor, fecha, calificacion;
+            return __generator(this, function (_a) {
+                id = this.id;
+                idComprador = this.idComprador;
+                idVendedor = this.idVendedor;
+                fecha = this.fecha;
+                calificacion = this.calificacion;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        if (this.find(this.id) == null) {
+                            Producto.Conexion().query("insert into calificaciones_vendedores values(" + id + ", " + idVendedor + ", " + idComprador + ", " + calificacion + ", '" + this.fecha + "');", function (error, results, fields) {
+                                if (error)
+                                    throw error;
+                                this.query = " ";
+                            });
+                        }
+                        else {
+                            Producto.Conexion().query("update calificaciones_vendedores set id_vendedor = " + this.idVendedor + ", id_comprador = " + this.idComprador + ", calificacion = " + this.calificacion + ", fecha = '" + this.fecha + "' where id = " + this.id, function (error, results, fields) {
+                                if (error)
+                                    throw error;
+                                this.query = " ";
+                            });
+                        }
+                    })];
+            });
+        });
+    };
     return CalificacionVendedor;
 }(Tabla));
 exports.CalificacionVendedor = CalificacionVendedor;
@@ -481,6 +569,34 @@ var CalificacionComprador = /** @class */ (function (_super) {
                             CalificacionComprador.borrarQuery();
                             resolve(buyer);
                         });
+                    })];
+            });
+        });
+    };
+    CalificacionComprador.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, idComprador, idVendedor, fecha, calificacion;
+            return __generator(this, function (_a) {
+                id = this.id;
+                idComprador = this.idComprador;
+                idVendedor = this.idVendedor;
+                fecha = this.fecha;
+                calificacion = this.calificacion;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        if (this.find(this.id) == null) {
+                            Producto.Conexion().query("insert into calificaciones_comprador values(" + id + ", " + idComprador + ", " + idVendedor + ", " + calificacion + ", '" + fecha + "');", function (error, results, fields) {
+                                if (error)
+                                    throw error;
+                                this.query = " ";
+                            });
+                        }
+                        else {
+                            Producto.Conexion().query("update calificaciones_vendedores set id_vendedor = " + idVendedor + ", id_comprador = " + idComprador + ", calificacion = " + calificacion + ", fecha = '" + fecha + "' where id = " + id, function (error, results, fields) {
+                                if (error)
+                                    throw error;
+                                this.query = " ";
+                            });
+                        }
                     })];
             });
         });

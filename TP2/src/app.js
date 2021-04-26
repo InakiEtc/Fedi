@@ -154,7 +154,7 @@ app.route('/usuarios/:id_usuario/compras')
 })
     .post(function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var id, idProducto, cant, p, stock, sentencia1, sentencia2;
+        var id, idProducto, cant, p, stock, cc, p2, pp;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -165,22 +165,19 @@ app.route('/usuarios/:id_usuario/compras')
                 case 1:
                     p = _a.sent();
                     stock = p[0].stock;
-                    if (stock >= cant && idProducto != null) {
-                        sentencia1 = "insert into compras values (null," + id + "," + idProducto + "," + cant + ",now(),0,0)";
-                        connection.query(sentencia1, function (error, results, fields) {
-                            if (error)
-                                throw error;
-                        });
-                        sentencia2 = "update productos set stock= " + (stock - cant) + " where id = " + idProducto + " ";
-                        connection.query(sentencia2, function (error, results, fields) {
-                            if (error)
-                                throw error;
-                        });
-                    }
-                    else {
-                        console.log("No hay stock suficiente");
-                    }
-                    return [2 /*return*/];
+                    if (!(stock >= cant && idProducto != null)) return [3 /*break*/, 3];
+                    cc = new clases_1.Compra(null, id, idProducto, cant, 'now()', 0, 0);
+                    cc.save();
+                    return [4 /*yield*/, clases_1.Producto.where('id', '=', idProducto).get()];
+                case 2:
+                    p2 = _a.sent();
+                    pp = new clases_1.Producto(idProducto, p2[0].nombre, p2[0].vendedor, p2[0].precio, stock - 1, p2[0].usado);
+                    pp.save();
+                    return [3 /*break*/, 4];
+                case 3:
+                    console.log("No hay stock suficiente");
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });
