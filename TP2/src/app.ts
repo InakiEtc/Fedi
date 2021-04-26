@@ -117,35 +117,19 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .post(function (req, res) {
     let id_usuario = req.params.id_usuario;
-    let id_calificante = req.body.id_calificante;
     let id_operacion = req.body.id_operacion;
     let id_calificacion = req.body.id_calificacion;
-    let id_vendedor = req.body.id_vendedor; 
-    let id_comprador = req.body.id_comprador;
-
 
     connection.query('SELECT compras.id_usuario as id_comprador , vendedor as id_vendedor FROM productos INNER JOIN compras ON productos.id=id_producto WHERE compras.id = '+id_operacion+';', function (error, resultsQuery1, fields) {
         if (error) throw error;
         if(resultsQuery1[0].id_comprador==id_usuario){
-
-            connection.query("Insert into calificaciones_compradores values (null, "+id_usuario+","+resultsQuery1[0].id_vendedor+","+id_calificacion+", NOW());", function (error, results, field){
-              if(error){
-                throw error;
-            }
-            else{
-                res.send('InsertadE');
-            }
-
-            })
+          connection.query("Insert into calificaciones_compradores values (null, "+id_usuario+","+resultsQuery1[0].id_vendedor+","+id_calificacion+", NOW());", function (error, results, field){
+            if(error) throw error;
+          })
         }
         else {
             connection.query("Insert into calificaciones_vendedores values (null, "+id_usuario+","+resultsQuery1[0].id_comprador+","+id_calificacion+", NOW());", function (error, results, field){
-              if(error){
-                throw error;
-            }
-            else{
-                res.send('InsertadE');
-            }
+              if(error) throw error;
             })
         }
     });

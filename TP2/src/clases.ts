@@ -409,7 +409,7 @@ export class CalificacionVendedor extends Tabla{
     let calificacion=this.calificacion; 
     return new Promise(function (resolve, reject){
       if(this.find(this.id) == null){
-        Producto.Conexion().query("insert into calificaciones_vendedores values("+id+", "+idVendedor+", "+idComprador+", "+calificacion+", '"+this.fecha+"');", function (error, results, fields){
+        Producto.Conexion().query("insert into calificaciones_vendedores values("+id+", "+idVendedor+", "+idComprador+", "+calificacion+", '"+fecha+"');", function (error, results, fields){
           if (error) throw error;
             this.query = " ";
         });
