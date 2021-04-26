@@ -218,6 +218,18 @@ export class Favorito extends Tabla{
       });
     });
   }
+
+  async save(){
+    let id = this.id;
+    let idUsuario=this.idUsuario;
+    let idProducto=this.idProducto;
+    return new Promise(function (resolve, reject){
+      Producto.Conexion().query("insert into favoritos values("+id+", "+idUsuario+", "+idProducto+");", function (error, results, fields){
+        if (error) throw error;
+          this.query = " ";
+      });
+    });
+  }
 }
 
 export class Compra extends Tabla{
@@ -349,16 +361,17 @@ export class CalificacionComprador extends Tabla{
   id:number;
   idComprador:number;
   idVendedor:number;
-  fecha:string;
   calificacion: number;
+  fecha:string;
+  
 
   constructor(id:number, idComprador:number, idVendedor:number, fecha:string, calificacion: number){
     super();
     this.id = id;
     this.idComprador = idComprador;
     this.idVendedor = idVendedor;
-    this.fecha = fecha;
     this.calificacion = calificacion; 
+    this.fecha = fecha;
   }
 
   getId():number{

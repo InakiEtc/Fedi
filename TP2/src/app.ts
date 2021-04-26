@@ -51,29 +51,22 @@ app.get('/productos', async(req, res) => {
 app.route('/usuarios/:id_usuario/fav')
   .get(async function (req, res) {
     var id = req.param('id_usuario');
-    var f;
-    f = await Favorito.where('id_usuario','=',id).get();
+    var f = await Favorito.where('id_usuario','=',id).get();
     res.json(f);
   })
-  .post(function (req, res) {
+  .post(async function (req, res) {
     var id = req.param('id_usuario');
-    var id_p = req.body.idP;
+    var idP = req.param('idP');
+    var f = await Favorito.where('id_usuario','=',id).get();
 
-    var sentencia = "select id_producto from favoritos where id_usuario = "+id+"";
-    connection.query(sentencia, function (error, results, fields){
-      if (error) throw error;
-      var json = (JSON.parse(JSON.stringify(results)));
-      for(let i = 0; i < json.length; i++) {
-        if(json[i].id_producto == id_p){
-          console.log("Ya esta en favoritos");
-          return;
-        }
+    for(let i = 0; i < f.length; i++) {
+      if(f[i].id_producto == idP){
+        console.log("Ya esta en favoritos");
+        return;
       }
-      var sentencia1 = "insert into favoritos values (null,"+id+","+id_p+")";
-      connection.query(sentencia1, function (error, results, fields){
-        if (error) throw error;
-      })
-    })
+    }
+    let ff = new Favorito(null,id,idP);
+    ff.save();
   })
   .delete(function (req,res,next){
     var id = req.param('id_usuario');
@@ -88,51 +81,42 @@ app.route('/usuarios/:id_usuario/fav')
   app.route('/usuarios/:id_usuario/compras')
   .get(async function (req, res){
     var id = req.param('id_usuario');
-    var c;
-    c = await Compra.where('id_usuario','=',id).get();
+    var c = await Compra.where('id_usuario','=',id).get();
     res.json(c);
   })
-  .post(function (req, res) {
+  .post(async function (req, res) {
     var id = req.param('id_usuario');
-    var idProducto = req.body.idP;
-    var cant = req.body.cantidad;
+    var idProducto = req.param('idP');
+    var cant = req.param('cantidad');
 
-    var sentencia = "select stock as stockP from productos where id="+idProducto+"";
-    connection.query(sentencia, function (error, results, fields){
+    var p = await Producto.where('id','=',idProducto).get();
+    var stock = p[0].stock;
+    
+    if(stock >= cant  && idProducto != null){
+      var sentencia1 = "insert into compras values (null,"+id+","+idProducto+","+cant+",now(),0,0)";
+      connection.query(sentencia1, function (error, results, fields){
         if (error) throw error;
-        var stock = results[0].stockP;
-      
-      if(stock >= cant  && idProducto != null){
-        var sentencia1 = "insert into compras values (null,"+id+","+idProducto+","+cant+",now(),0,0)";
-        connection.query(sentencia1, function (error, results, fields){
-          if (error) throw error;
-        })
-        var sentencia2 = "update productos set stock= "+(stock-cant)+" where id = "+idProducto+" ";
-        connection.query(sentencia2, function (error, results, fields){
-          if (error) throw error;
-        })
-      }
-      else{
-        console.log("No hay stock suficiente");
-      }
-    })
+      })
+      var sentencia2 = "update productos set stock= "+(stock-cant)+" where id = "+idProducto+" ";
+      connection.query(sentencia2, function (error, results, fields){
+        if (error) throw error;
+      })
+    }
+    else{
+      console.log("No hay stock suficiente");
+    }
   })
 
   app.route("/usuarios/:id_usuario/calificaciones")
-  .get(function (req, res){
+  .get(async function (req, res){
     let id = req.param('id_usuario');
-  
-    var cc;
-    var cv;
+    var detalleCalifUser:Array<JSON> = new Array;
 
-    cc = CalificacionComprador.where('id_comprador','=',id).get();
-    cv = CalificacionVendedor.where('id_vendedor','=',id).get();
+    var cc = await CalificacionComprador.where('id_comprador','=',id).get();
+    var cv = await CalificacionVendedor.where('id_vendedor','=',id).get();  
+    detalleCalifUser.push(cc,cv);
 
-    let sentencia = "select id_comprador , id_vendedor , calificacion , fecha from calificaciones_compradores where id = "+id+" union select id_comprador , id_vendedor , calificacion , fecha from calificaciones_vendedores where id = "+id+"";
-    connection.query(sentencia, function (error, results, fields){
-      if (error) throw error;
-        res.json(results);
-    })
+    res.json(detalleCalifUser);
   })
 
 

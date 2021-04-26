@@ -104,23 +104,26 @@ app.route('/usuarios/:id_usuario/fav')
     });
 })
     .post(function (req, res) {
-    var id = req.param('id_usuario');
-    var id_p = req.body.idP;
-    var sentencia = "select id_producto from favoritos where id_usuario = " + id + "";
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        var json = (JSON.parse(JSON.stringify(results)));
-        for (var i = 0; i < json.length; i++) {
-            if (json[i].id_producto == id_p) {
-                console.log("Ya esta en favoritos");
-                return;
+    return __awaiter(this, void 0, void 0, function () {
+        var id, idP, f, i, ff;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    id = req.param('id_usuario');
+                    idP = req.param('idP');
+                    return [4 /*yield*/, clases_1.Favorito.where('id_usuario', '=', id).get()];
+                case 1:
+                    f = _a.sent();
+                    for (i = 0; i < f.length; i++) {
+                        if (f[i].id_producto == idP) {
+                            console.log("Ya esta en favoritos");
+                            return [2 /*return*/];
+                        }
+                    }
+                    ff = new clases_1.Favorito(null, id, idP);
+                    ff.save();
+                    return [2 /*return*/];
             }
-        }
-        var sentencia1 = "insert into favoritos values (null," + id + "," + id_p + ")";
-        connection.query(sentencia1, function (error, results, fields) {
-            if (error)
-                throw error;
         });
     });
 })["delete"](function (req, res, next) {
@@ -150,28 +153,57 @@ app.route('/usuarios/:id_usuario/compras')
     });
 })
     .post(function (req, res) {
-    var id = req.param('id_usuario');
-    var idProducto = req.body.idP;
-    var cant = req.body.cantidad;
-    var sentencia = "select stock as stockP from productos where id=" + idProducto + "";
-    connection.query(sentencia, function (error, results, fields) {
-        if (error)
-            throw error;
-        var stock = results[0].stockP;
-        if (stock >= cant && idProducto != null) {
-            var sentencia1 = "insert into compras values (null," + id + "," + idProducto + "," + cant + ",now(),0,0)";
-            connection.query(sentencia1, function (error, results, fields) {
-                if (error)
-                    throw error;
-            });
-            var sentencia2 = "update productos set stock= " + (stock - cant) + " where id = " + idProducto + " ";
-            connection.query(sentencia2, function (error, results, fields) {
-                if (error)
-                    throw error;
-            });
-        }
-        else {
-            console.log("No hay stock suficiente");
-        }
+    return __awaiter(this, void 0, void 0, function () {
+        var id, idProducto, cant, p, stock, sentencia1, sentencia2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    id = req.param('id_usuario');
+                    idProducto = req.param('idP');
+                    cant = req.param('cantidad');
+                    return [4 /*yield*/, clases_1.Producto.where('id', '=', idProducto).get()];
+                case 1:
+                    p = _a.sent();
+                    stock = p[0].stock;
+                    if (stock >= cant && idProducto != null) {
+                        sentencia1 = "insert into compras values (null," + id + "," + idProducto + "," + cant + ",now(),0,0)";
+                        connection.query(sentencia1, function (error, results, fields) {
+                            if (error)
+                                throw error;
+                        });
+                        sentencia2 = "update productos set stock= " + (stock - cant) + " where id = " + idProducto + " ";
+                        connection.query(sentencia2, function (error, results, fields) {
+                            if (error)
+                                throw error;
+                        });
+                    }
+                    else {
+                        console.log("No hay stock suficiente");
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+});
+app.route("/usuarios/:id_usuario/calificaciones")
+    .get(function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var id, detalleCalifUser, cc, cv;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    id = req.param('id_usuario');
+                    detalleCalifUser = new Array;
+                    return [4 /*yield*/, clases_1.CalificacionComprador.where('id_comprador', '=', id).get()];
+                case 1:
+                    cc = _a.sent();
+                    return [4 /*yield*/, clases_1.CalificacionVendedor.where('id_vendedor', '=', id).get()];
+                case 2:
+                    cv = _a.sent();
+                    detalleCalifUser.push(cc, cv);
+                    res.json(detalleCalifUser);
+                    return [2 /*return*/];
+            }
+        });
     });
 });

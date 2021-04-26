@@ -277,6 +277,23 @@ var Favorito = /** @class */ (function (_super) {
             });
         });
     };
+    Favorito.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, idUsuario, idProducto;
+            return __generator(this, function (_a) {
+                id = this.id;
+                idUsuario = this.idUsuario;
+                idProducto = this.idProducto;
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        Producto.Conexion().query("insert into favoritos values(" + id + ", " + idUsuario + ", " + idProducto + ");", function (error, results, fields) {
+                            if (error)
+                                throw error;
+                            this.query = " ";
+                        });
+                    })];
+            });
+        });
+    };
     return Favorito;
 }(Tabla));
 exports.Favorito = Favorito;
@@ -417,8 +434,8 @@ var CalificacionComprador = /** @class */ (function (_super) {
         _this.id = id;
         _this.idComprador = idComprador;
         _this.idVendedor = idVendedor;
-        _this.fecha = fecha;
         _this.calificacion = calificacion;
+        _this.fecha = fecha;
         return _this;
     }
     CalificacionComprador.prototype.getId = function () {
