@@ -56,7 +56,7 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .post(async function (req, res) {
     var id = req.param('id_usuario');
-    var idP = req.param('idP');
+    var idP = req.body.idP;
     var f = await Favorito.where('id_usuario','=',id).get();
 
     for(let i = 0; i < f.length; i++) {
@@ -86,8 +86,8 @@ app.route('/usuarios/:id_usuario/fav')
   })
   .post(async function (req, res) {
     var id = req.param('id_usuario');
-    var idProducto = req.param('idP');
-    var cant = req.param('cantidad');
+    var idProducto = req.body.idP;
+    var cant = req.body.cantidad;
 
     var p = await Producto.where('id','=',idProducto).get();
     var stock = p[0].stock;
@@ -115,7 +115,7 @@ app.route('/usuarios/:id_usuario/fav')
 
     res.json(detalleCalifUser);
   })
-  .post(function (req, res) {
+  /*.post(function (req, res) {
     let id_usuario = req.params.id_usuario;
     let id_operacion = req.body.id_operacion;
     let id_calificacion = req.body.id_calificacion;
@@ -133,7 +133,7 @@ app.route('/usuarios/:id_usuario/fav')
             })
         }
     });
-})
+})*/
 
 
 
