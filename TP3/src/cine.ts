@@ -3,7 +3,7 @@ var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : 'pelaroot',
-  database : 'ecommerce'
+  database : 'cine'
 });
  
 connection.connect(function(err) {
@@ -25,3 +25,16 @@ app.listen(port, () => {
 app.get('/', (req, res) => {
   res.send('prende eso?');
 })
+
+app.get('/funciones', (req, res) => {
+    
+})
+
+app.post('/reservar', (req, res) => {
+    
+})
+
+app.post('/cancelar_reserva', (req, res) => {
+    
+})
+
