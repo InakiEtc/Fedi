@@ -110,7 +110,7 @@ app.route('/usuarios/:id_usuario/fav')
             switch (_a.label) {
                 case 0:
                     id = req.param('id_usuario');
-                    idP = req.param('idP');
+                    idP = req.body.idP;
                     return [4 /*yield*/, clases_1.Favorito.where('id_usuario', '=', id).get()];
                 case 1:
                     f = _a.sent();
@@ -159,8 +159,8 @@ app.route('/usuarios/:id_usuario/compras')
             switch (_a.label) {
                 case 0:
                     id = req.param('id_usuario');
-                    idProducto = req.param('idP');
-                    cant = req.param('cantidad');
+                    idProducto = req.body.idP;
+                    cant = req.body.cantidad;
                     return [4 /*yield*/, clases_1.Producto.where('id', '=', idProducto).get()];
                 case 1:
                     p = _a.sent();
@@ -204,3 +204,22 @@ app.route("/usuarios/:id_usuario/calificaciones")
         });
     });
 });
+/*.post(function (req, res) {
+  let id_usuario = req.params.id_usuario;
+  let id_operacion = req.body.id_operacion;
+  let id_calificacion = req.body.id_calificacion;
+
+  connection.query('SELECT compras.id_usuario as id_comprador , vendedor as id_vendedor FROM productos INNER JOIN compras ON productos.id=id_producto WHERE compras.id = '+id_operacion+';', function (error, resultsQuery1, fields) {
+      if (error) throw error;
+      if(resultsQuery1[0].id_comprador==id_usuario){
+        connection.query("Insert into calificaciones_compradores values (null, "+id_usuario+","+resultsQuery1[0].id_vendedor+","+id_calificacion+", NOW());", function (error, results, field){
+          if(error) throw error;
+        })
+      }
+      else {
+          connection.query("Insert into calificaciones_vendedores values (null, "+id_usuario+","+resultsQuery1[0].id_comprador+","+id_calificacion+", NOW());", function (error, results, field){
+            if(error) throw error;
+          })
+      }
+  });
+})*/

@@ -26,8 +26,19 @@ app.get('/', (req, res) => {
   res.send('prende eso?');
 })
 
-app.get('/funciones', (req, res) => {
-    
+function funcionesDisponibles(){ 
+  return new Promise(function (resolve, reject){
+      connection.query("select titulo from funciones where vigente = 1 and fecha > now()"
+      , function (error, results, fields){
+      if (error) throw error;
+          resolve(results)
+      });
+  });
+}
+
+app.get('/funciones', async (req, res) => {
+  let funciones = await funcionesDisponibles();
+  res.json(funciones);
 })
 
 app.post('/reservar', (req, res) => {
