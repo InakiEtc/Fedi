@@ -1,5 +1,3 @@
-import * as bodyparser from 'body-parser';    
-
 const mysql = require('mysql');
 const pool = mysql.createPool({
 host     : 'localhost',
@@ -8,6 +6,8 @@ password : 'pelaroot',
 database : 'cine'
 });
 const cluster = require('cluster');
+const bodyParser = require('body-parser');
+
 
 pool.getConnection(function(err,con) {
   if (err) throw err;
@@ -70,8 +70,8 @@ else{
   const app = express();
   const port = 3000;
 
-  app.use(bodyparser.json());
-  app.use(bodyparser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   app.listen(port, () => {
     console.log(`Se levanto el server en http://localhost:${port}`);

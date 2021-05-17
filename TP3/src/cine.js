@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,8 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
-var bodyparser = require("body-parser");
+var _this = this;
 var mysql = require('mysql');
 var pool = mysql.createPool({
     host: 'localhost',
@@ -45,6 +43,7 @@ var pool = mysql.createPool({
     database: 'cine'
 });
 var cluster = require('cluster');
+var bodyParser = require('body-parser');
 pool.getConnection(function (err, con) {
     if (err)
         throw err;
@@ -113,20 +112,21 @@ else {
     var express = require('express');
     var app = express();
     var port_1 = 3000;
-    app.use(bodyparser.json());
-    app.use(bodyparser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
     app.listen(port_1, function () {
         console.log("Se levanto el server en http://localhost:" + port_1);
     });
     app.get('/', function (req, res) {
         res.send('prende eso?');
     });
-    app.get('/funciones', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    app.get('/funciones', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/];
         });
     }); });
     app.post('/:id_funcion/reservar', function (req, res) {
+        console.log(req.body);
         var idF = req.param('id_funcion');
         var butacasReservar = req.body.butacas;
         var idUser = req.body.usuario;
