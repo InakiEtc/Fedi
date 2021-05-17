@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
 });
 
 var vueltas = 0
- 
+
 connection.connect(function(err) {
   if (err) {
     console.error('error connecting: ' + err.stack);
@@ -26,7 +26,7 @@ function cambiarEstadoFuncion(){
     });
   }
 
-  var CronJob = require('cron').CronJob;
+var CronJob = require('cron').CronJob;
 var job = new CronJob('5 * * * * *',  async function(){
     console.log('vueltas: '+(vueltas++))
     cambiarEstadoFuncion()
