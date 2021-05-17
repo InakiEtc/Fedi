@@ -17,46 +17,45 @@ pool.getConnection(function(err,con) {
 
 if(cluster.isWorker){
   process.on('message', (reservar) => {
-    //console.log(reservar)
     pool.getConnection(function(err,con){
       con.beginTransaction(function(err){
           if (err) throw err;
-          con.query("select * from funciones where vigente = 1 and fecha > now() and id = "+reservar.idF+" for update", function (err, result, fields) {
+          con.query("select * from funciones where vigente = 1 and fecha > now() and id = "+reservar[0]+" for update", function (err, result, fields) {
             if (err) throw err;
             let funciones = new Array();
             result.forEach(x => {
               funciones.push(x.id);
             });
-            let butacas = JSON.parse(result.butacas_disponibles);
             if(funciones == null) return "La funcion que quiere reservar no existe";
-            con.query("select * from reservas where usuario = "+reservar.idUser+" for update", function (err, result, fields) {
+            let butacas = JSON.parse(result[0].butacas_disponibles);
+            con.query("select * from reservas where usuario = "+reservar[2]+" for update", function (err, result, fields) {
               if (err) throw err;
               let funciones2 = new Array();
               result.forEach(x => {
                 funciones2.push(x.funcion);
               });
-              if(funciones2.includes(reservar.getidF)) return "Ya sacaste entradas para esta funcion";
-              if(butacas.length < reservar.butacasReservar.length && reservar.butacasReservar.length <= 6)return "No hay butacas suficientes";
+              if(funciones2.includes(reservar[0])) return "Ya sacaste entradas para esta funcion";
+              if(butacas.length < reservar[1].length && reservar[1].length <= 6)return "No hay butacas suficientes";
               let arrayButacasR = [];
               for (let i = 0; i < butacas.length; i++) {
-                for (let j = 0; j < reservar.butacasReservar.length; j++) {
-                  if (butacas[i] == reservar.butacasReservar[j]){
-                    arrayButacasR.push(reservar.butacasReservar[j]);
-                    delete butacas[i];
+                for (let j = 0; j < reservar[1].length; j++) {
+                  if (butacas[i] == reservar[1][j]){
+                    arrayButacasR.push(reservar[1][j]);
+                    butacas.splice(i,1);
                   }
                 }
               }
               butacas = JSON.stringify(butacas);
               let stringButacasR = JSON.stringify(arrayButacasR)
               if(butacas.length == 0){
-                con.query("update funciones set vigente = 0 and butacas_disponibles = []", function (err, result, fields) {
+                con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= "+reservar[0], function (err, result, fields) {
                   if (err) throw err;
                 });  
               }
-              con.query("update funciones set butacas_disponibles = "+stringButacasR, function (err, result, fields) {
+              con.query("update funciones set butacas_disponibles = "+butacas+" where id= "+reservar[0], function (err, result, fields) {
                 if (err) throw err;
               });  
-              con.query("insert into reservas values(null,"+reservar.idUser+","+reservar.idF+","+stringButacasR+")", function (err, result, fields) {
+              con.query("insert into reservas values(null,"+reservar[2]+","+reservar[0]+", "+stringButacasR+")", function (err, result, fields) {
                 if (err) throw err;
               });  
             });
