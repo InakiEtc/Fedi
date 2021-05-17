@@ -41,7 +41,7 @@ var mysql = require('mysql');
 var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: 'alumnoipm',
+    password: 'pelaroot',
     database: 'cine'
 });
 var cluster = require('cluster');
@@ -52,11 +52,12 @@ pool.getConnection(function (err, con) {
 });
 if (cluster.isWorker) {
     process.on('message', function (reservar) {
+        //console.log(reservar)
         pool.getConnection(function (err, con) {
             con.beginTransaction(function (err) {
                 if (err)
                     throw err;
-                con.query("select * from funciones where vigente = 1 and fecha > now() and id = " + reservar.get("idF") + " for update", function (err, result, fields) {
+                con.query("select * from funciones where vigente = 1 and fecha > now() and id = " + reservar.idF + " for update", function (err, result, fields) {
                     if (err)
                         throw err;
                     var funciones = new Array();
@@ -66,22 +67,22 @@ if (cluster.isWorker) {
                     var butacas = JSON.parse(result.butacas_disponibles);
                     if (funciones == null)
                         return "La funcion que quiere reservar no existe";
-                    con.query("select * from reservas where usuario = " + reservar.get("idUser") + " for update", function (err, result, fields) {
+                    con.query("select * from reservas where usuario = " + reservar.idUser + " for update", function (err, result, fields) {
                         if (err)
                             throw err;
                         var funciones2 = new Array();
                         result.forEach(function (x) {
                             funciones2.push(x.funcion);
                         });
-                        if (funciones2.includes(reservar.get("idF")))
+                        if (funciones2.includes(reservar.getidF))
                             return "Ya sacaste entradas para esta funcion";
-                        if (butacas.length < reservar.get("butacasReservar").length && reservar.get("butacasReservar").length <= 6)
+                        if (butacas.length < reservar.butacasReservar.length && reservar.butacasReservar.length <= 6)
                             return "No hay butacas suficientes";
                         var arrayButacasR = [];
                         for (var i = 0; i < butacas.length; i++) {
-                            for (var j = 0; j < reservar.get("butacasReservar").length; j++) {
-                                if (butacas[i] == reservar.get("butacasReservar")[j]) {
-                                    arrayButacasR.push(reservar.get("butacasReservar")[j]);
+                            for (var j = 0; j < reservar.butacasReservar.length; j++) {
+                                if (butacas[i] == reservar.butacasReservar[j]) {
+                                    arrayButacasR.push(reservar.butacasReservar[j]);
                                     delete butacas[i];
                                 }
                             }
@@ -98,7 +99,7 @@ if (cluster.isWorker) {
                             if (err)
                                 throw err;
                         });
-                        con.query("insert into reservas values(null," + reservar.get("idUser") + "," + reservar.get("idF") + "," + stringButacasR + ")", function (err, result, fields) {
+                        con.query("insert into reservas values(null," + reservar.idUser + "," + reservar.idF + "," + stringButacasR + ")", function (err, result, fields) {
                             if (err)
                                 throw err;
                         });
@@ -126,14 +127,13 @@ else {
         });
     }); });
     app.post('/:id_funcion/reservar', function (req, res) {
-        console.log(req.body);
         var idF = req.param('id_funcion');
         var butacasReservar = req.body.butacas;
         var idUser = req.body.usuario;
-        var reservar = new Map();
-        reservar.set("idF", idF);
-        reservar.set("butacasReservar", butacasReservar);
-        reservar.set("idUser", idUser);
+        var reservar = new Array;
+        reservar.push(idF);
+        reservar.push(butacasReservar);
+        reservar.push(idUser);
         var worker = cluster.fork();
         worker.send(reservar);
         worker.on('message', function (result) {
