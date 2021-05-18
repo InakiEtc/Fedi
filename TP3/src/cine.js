@@ -40,7 +40,8 @@ var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'pelaroot',
-    database: 'cine'
+    database: 'cine',
+    port: '3306'
 });
 var cluster = require('cluster');
 var bodyParser = require('body-parser');
@@ -63,9 +64,9 @@ if (cluster.isWorker) {
                         funciones.push(x.id);
                     });
                     if (funciones == null)
-                        return "La funcion que quiere reservar no existe";
+                        return console.log("La funcion que quiere reservar no existe");
                     var butacas = JSON.parse(result[0].butacas_disponibles);
-                    con.query("select * from reservas where usuario = " + reservar[2] + " for update", function (err, result, fields) {
+                    con.query("select * from reservas where usuario = " + reservar[2], function (err, result, fields) {
                         if (err)
                             throw err;
                         var funciones2 = new Array();
@@ -93,13 +94,15 @@ if (cluster.isWorker) {
                                     throw err;
                             });
                         }
-                        con.query("update funciones set butacas_disponibles = " + butacas + " where id= " + reservar[0], function (err, result, fields) {
+                        con.query("update funciones set butacas_disponibles = '" + butacas + "' where id= " + reservar[0], function (err, result, fields) {
                             if (err)
                                 throw err;
+                            console.log("Se actualizo las butacas disponibles");
                         });
-                        con.query("insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", " + stringButacasR + ")", function (err, result, fields) {
+                        con.query("insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", '" + stringButacasR + "')", function (err, result, fields) {
                             if (err)
                                 throw err;
+                            console.log("Se reservo correctamente");
                         });
                     });
                 });
