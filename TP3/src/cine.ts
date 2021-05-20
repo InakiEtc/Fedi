@@ -25,20 +25,16 @@ if(cluster.isWorker){
           con.query("select * from funciones where vigente = 1 and fecha > now() and id = "+reservar[0]+" for update", function (err, result, fields) {
             if (err) throw err;
             if(result[0] == null) return console.log("La funcion que quiere reservar no existe");
-            let funciones = new Array();
-            result.forEach(x => {
-              funciones.push(x.id);
-            });
             let butacas = JSON.parse(result[0].butacas_disponibles);
-            con.query("select * from reservas where usuario = "+reservar[2]+" for update", function (err, result, fields) {
+            con.query("select * from reservas where usuario = "+reservar[2], function (err, result, fields) {
               if (err) throw err;
-              let funciones2 = new Array();
+              let funciones = new Array();
               result.forEach(x => {
-                funciones2.push(x.funcion);
+                funciones.push(x.funcion);
               });
-              if(funciones2.includes(reservar[0])) return "Ya sacaste entradas para esta funcion";//esto esta mal creo(se tendria que fijar que no tenga una reserva hecha para esa funcion)
-              if(butacas.length < reservar[1].length && reservar[1].length <= 6)return "No hay butacas suficientes";//esto esta mal creo(se tendria que fijar si las butacas que quedan libres es menor a las que yo le paso tire false y si ingresa mas de 6 tmb tire false)
-              let arrayButacasR = [];
+              if(funciones.includes(reservar[0])) return "Ya sacaste entradas para esta funcion";
+              if(butacas.length < reservar[1].length && reservar[1].length <= 6)return "No hay butacas suficientes";//mepa que funca mal averiguar xq
+              let arrayButacasR = new Array();
               for (let i = 0; i < butacas.length; i++) {
                 for (let j = 0; j < reservar[1].length; j++) {
                   if (butacas[i] == reservar[1][j]){

@@ -61,23 +61,19 @@ if (cluster.isWorker) {
                         throw err;
                     if (result[0] == null)
                         return console.log("La funcion que quiere reservar no existe");
-                    var funciones = new Array();
-                    result.forEach(function (x) {
-                        funciones.push(x.id);
-                    });
                     var butacas = JSON.parse(result[0].butacas_disponibles);
-                    con.query("select * from reservas where usuario = " + reservar[2] + " for update", function (err, result, fields) {
+                    con.query("select * from reservas where usuario = " + reservar[2], function (err, result, fields) {
                         if (err)
                             throw err;
-                        var funciones2 = new Array();
+                        var funciones = new Array();
                         result.forEach(function (x) {
-                            funciones2.push(x.funcion);
+                            funciones.push(x.funcion);
                         });
-                        if (funciones2.includes(reservar[0]))
+                        if (funciones.includes(reservar[0]))
                             return "Ya sacaste entradas para esta funcion";
                         if (butacas.length < reservar[1].length && reservar[1].length <= 6)
                             return "No hay butacas suficientes";
-                        var arrayButacasR = [];
+                        var arrayButacasR = new Array();
                         for (var i = 0; i < butacas.length; i++) {
                             for (var j = 0; j < reservar[1].length; j++) {
                                 if (butacas[i] == reservar[1][j]) {
@@ -88,6 +84,7 @@ if (cluster.isWorker) {
                         }
                         butacas = JSON.stringify(butacas);
                         var stringButacasR = JSON.stringify(arrayButacasR);
+                        console.log(stringButacasR);
                         if (butacas.length == 0) {
                             con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= " + reservar[0], function (err, result, fields) {
                                 if (err)
