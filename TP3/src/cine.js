@@ -59,14 +59,14 @@ if (cluster.isWorker) {
                 con.query("select * from funciones where vigente = 1 and fecha > now() and id = " + reservar[0] + " for update", function (err, result, fields) {
                     if (err)
                         throw err;
+                    if (result[0] == null)
+                        return console.log("La funcion que quiere reservar no existe");
                     var funciones = new Array();
                     result.forEach(function (x) {
                         funciones.push(x.id);
                     });
-                    if (funciones == null)
-                        return console.log("La funcion que quiere reservar no existe");
                     var butacas = JSON.parse(result[0].butacas_disponibles);
-                    con.query("select * from reservas where usuario = " + reservar[2], function (err, result, fields) {
+                    con.query("select * from reservas where usuario = " + reservar[2] + " for update", function (err, result, fields) {
                         if (err)
                             throw err;
                         var funciones2 = new Array();
