@@ -33,7 +33,7 @@ if(cluster.isWorker){
                 funciones.push(x.funcion);
               });
               if(funciones.includes(reservar[0])) return "Ya sacaste entradas para esta funcion";
-              if(butacas.length < reservar[1].length && reservar[1].length <= 6)return "No hay butacas suficientes";//mepa que funca mal averiguar xq
+              if(butacas.length < reservar[1].length && reservar[1].length <= 6)return "No hay butacas suficientes";//mepa que funca mal
               let arrayButacasR = new Array();
               for (let i = 0; i < butacas.length; i++) {
                 for (let j = 0; j < reservar[1].length; j++) {
