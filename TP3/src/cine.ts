@@ -45,18 +45,18 @@ if(cluster.isWorker){
               }
               butacas = JSON.stringify(butacas);
               let stringButacasR = JSON.stringify(arrayButacasR)
-              if(butacas.length == 0){
-                con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= "+reservar[0], function (err, result, fields) {
-                  if (err) throw err;
-                });  
-              }
-              con.query("update funciones set butacas_disponibles = '"+butacas+"' where id= "+reservar[0], function (err, result, fields) {
-                if (err) throw err;
-                console.log("Se actualizo las butacas disponibles");
-              });  
               con.query("insert into reservas values(null,"+reservar[2]+","+reservar[0]+", '"+stringButacasR+"')", function (err, result, fields) {
                 if (err) throw err;
                 console.log("Se reservo correctamente");
+                con.query("update funciones set butacas_disponibles = '"+butacas+"' where id= "+reservar[0], function (err, result, fields) {
+                  if (err) throw err;
+                  console.log("Se actualizo las butacas disponibles");
+                })
+                if(butacas.length == 0){
+                  con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= "+reservar[0], function (err, result, fields) {
+                    if (err) throw err;
+                  });  
+                }
               });  
             });
           });
