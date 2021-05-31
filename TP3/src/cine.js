@@ -70,9 +70,10 @@ if (cluster.isWorker) {
                             funciones.push(x.funcion);
                         });
                         if (funciones.includes(reservar[0]))
-                            return "Ya sacaste entradas para esta funcion";
-                        if (butacas.length < reservar[1].length && reservar[1].length <= 6)
-                            return "No hay butacas suficientes"; //mepa que funca mal averiguar xq
+                            process.send("Ya sacaste entradas para esta funcion");
+                        process.kill(process.pid);
+                        if (butacas.length < reservar[1].length || reservar[1].length <= 6)
+                            return "No hay butacas suficientes"; //mepa que funca mal
                         var arrayButacasR = new Array();
                         for (var i = 0; i < butacas.length; i++) {
                             for (var j = 0; j < reservar[1].length; j++) {
@@ -84,21 +85,32 @@ if (cluster.isWorker) {
                         }
                         butacas = JSON.stringify(butacas);
                         var stringButacasR = JSON.stringify(arrayButacasR);
-                        con.query("insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", '" + stringButacasR + "')", function (err, result, fields) {
+                        var query = "insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", '" + stringButacasR + "')";
+                        console.log(query);
+                        con.query(query, function (err, result, fields) {
                             if (err)
                                 throw err;
-                            console.log("Se reservo correctamente");
                             con.query("update funciones set butacas_disponibles = '" + butacas + "' where id= " + reservar[0], function (err, result, fields) {
                                 if (err)
                                     throw err;
-                                console.log("Se actualizo las butacas disponibles");
-                            });
-                            if (butacas.length == 0) {
-                                con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= " + reservar[0], function (err, result, fields) {
-                                    if (err)
-                                        throw err;
+                                if (butacas.length == 0) {
+                                    con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= " + reservar[0], function (err, result, fields) {
+                                        if (err)
+                                            throw err;
+                                    });
+                                }
+                                con.commit(function (err) {
+                                    if (err) {
+                                        return con.rollback(function () {
+                                            throw err;
+                                        });
+                                    }
+                                    con.release();
+                                    console.log("Proceso " + process.pid + ", Se reservo correctamente");
+                                    process.send(result);
+                                    process.kill(process.pid);
                                 });
-                            }
+                            });
                         });
                     });
                 });
