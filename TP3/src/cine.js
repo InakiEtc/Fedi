@@ -69,11 +69,16 @@ if (cluster.isWorker) {
                         result.forEach(function (x) {
                             funciones.push(x.funcion);
                         });
-                        if (funciones.includes(reservar[0]))
+                        if (funciones.includes(parseInt(reservar[0]))) {
+                            con.release();
                             process.send("Ya sacaste entradas para esta funcion");
-                        process.kill(process.pid);
-                        if (butacas.length < reservar[1].length || reservar[1].length <= 6)
-                            return "No hay butacas suficientes"; //mepa que funca mal
+                            process.kill(process.pid);
+                        }
+                        if (butacas.length < reservar[1].length || reservar[1].length > 6) {
+                            con.release();
+                            process.send("No hay butacas suficientes");
+                            process.kill(process.pid);
+                        }
                         var arrayButacasR = new Array();
                         for (var i = 0; i < butacas.length; i++) {
                             for (var j = 0; j < reservar[1].length; j++) {
@@ -85,9 +90,7 @@ if (cluster.isWorker) {
                         }
                         butacas = JSON.stringify(butacas);
                         var stringButacasR = JSON.stringify(arrayButacasR);
-                        var query = "insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", '" + stringButacasR + "')";
-                        console.log(query);
-                        con.query(query, function (err, result, fields) {
+                        con.query("insert into reservas values(null," + reservar[2] + "," + reservar[0] + ", '" + stringButacasR + "')", function (err, result, fields) {
                             if (err)
                                 throw err;
                             con.query("update funciones set butacas_disponibles = '" + butacas + "' where id= " + reservar[0], function (err, result, fields) {
@@ -106,7 +109,7 @@ if (cluster.isWorker) {
                                         });
                                     }
                                     con.release();
-                                    console.log("Proceso " + process.pid + ", Se reservo correctamente");
+                                    console.log("Se reservo correctamente");
                                     process.send(result);
                                     process.kill(process.pid);
                                 });
