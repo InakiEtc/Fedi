@@ -39,12 +39,12 @@ if(cluster.isWorker){
         else if(msg[0] == 'reservar'){
           con.query("select * from funciones where vigente = 1 and fecha > now() and id = "+msg[1]+" for update", function (err, result, fields) {
             if (err) throw err;
-            if(result[1] == null){
+            if(result[0] == null){
               con.release();
-              process.send("La funcion que quiere msg no existe");
+              process.send("La funcion que quiere reservar no existe");
               process.kill(process.pid);
             } 
-            let butacas = JSON.parse(result[1].butacas_disponibles);
+            let butacas = JSON.parse(result[0].butacas_disponibles);
             con.query("select * from reservas where usuario = "+msg[3], function (err, result, fields) {
               if (err) throw err;
               let funciones = new Array();
@@ -167,15 +167,15 @@ else{
     });
   });
   
-  app.post('/:id_funcion/msg', (req, res) => {
+  app.post('/:id_funcion/reservar', (req, res) => {
     let idF = req.param('id_funcion');
-    let butacasmsg = req.body.butacas;
+    let butacasreservar = req.body.butacas;
     let idUser = req.body.usuario;
 
     let msg = new Array;
-    msg.push('msg');
+    msg.push('reservar');
     msg.push(idF);
-    msg.push(butacasmsg);
+    msg.push(butacasreservar);
     msg.push(idUser);
 
     const worker = cluster.fork();
