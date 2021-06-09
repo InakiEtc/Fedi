@@ -32,14 +32,9 @@ app.get('/', (req, res) => {
 
 app.get('/funciones', (req, res) => {
   pool.getConnection(function(err,con){
-    if (err) throw err;
     con.query("SELECT titulo FROM funciones WHERE vigente = 1 AND fecha > NOW()", function (err, result, fields) {
-        if (err) {
-            return con.rollback(function() {
-                throw err;
-            });
-        }
-        res.json(result[0].titulo);
+      if (err) throw err;
+      res.json(result[0].titulo);
     });
   })
 });
@@ -85,7 +80,7 @@ app.post('/:id_funcion/reservar', (req, res) => {
         }
         butacas = JSON.stringify(butacas);
         let stringButacasR = JSON.stringify(arrayButacasR);
-        con.query("insert into reservas values(null,"+msg[2]+","+msg[0]+", '"+stringButacasR+"')", function (err, result, fields) {
+        con.query("insert into reservas values(null,"+msg[2]+","+msg[0]+", '"+stringButacasR+")", function (err, result, fields) {
           if (err) throw err;
           con.query("update funciones set butacas_disponibles = '"+butacas+"' where id= "+msg[0], function (err, result, fields) {
             if (err) throw err;

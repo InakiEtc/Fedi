@@ -25,14 +25,9 @@ app.get('/', function (req, res) {
 });
 app.get('/funciones', function (req, res) {
     pool.getConnection(function (err, con) {
-        if (err)
-            throw err;
         con.query("SELECT titulo FROM funciones WHERE vigente = 1 AND fecha > NOW()", function (err, result, fields) {
-            if (err) {
-                return con.rollback(function () {
-                    throw err;
-                });
-            }
+            if (err)
+                throw err;
             res.json(result[0].titulo);
         });
     });
@@ -79,6 +74,7 @@ app.post('/:id_funcion/reservar', function (req, res) {
                 }
                 butacas = JSON.stringify(butacas);
                 var stringButacasR = JSON.stringify(arrayButacasR);
+                let segundosInicio = new Date();
                 con.query("insert into reservas values(null," + msg[2] + "," + msg[0] + ", '" + stringButacasR + "')", function (err, result, fields) {
                     if (err)
                         throw err;
@@ -91,7 +87,7 @@ app.post('/:id_funcion/reservar', function (req, res) {
                                     throw err;
                             });
                         }
-                        console.log("Se reservo correctamente");
+                        console.log("Se reservo correctamente",new Date()-segundosInicio);
                     });
                 });
             });
