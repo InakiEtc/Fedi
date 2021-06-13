@@ -16,13 +16,30 @@ pool.getConnection(function(err,con) {
   console.log('Se conecto correctamente a mySQL');
 });
 
+var vueltas = 0
+function cambiarEstadoFuncion(){ 
+  return new Promise(function (resolve, reject){
+    connection.query("update funciones set vigente = 0 where fecha<=now()", function (error, results, fields){
+      if (error) throw error;
+        this.query = " ";
+    });
+  });
+}
+
+var CronJob = require('cron').CronJob;
+var job = new CronJob('5 * * * * *',  async function(){
+    console.log('vueltas: '+(vueltas++))
+    cambiarEstadoFuncion()
+});
+job.start();
+
 
 if(cluster.isWorker){
   process.on('message', (msg) => {
     pool.getConnection(function(err,con){
       con.beginTransaction(function(err){
         if (err) throw err;
-        if(msg=="funciones"){
+        if(msg="funciones"){
           if (err) throw err;
           con.query("SELECT titulo FROM funciones WHERE vigente = 1 AND fecha > NOW() FOR UPDATE", function (err, result, fields) {
               if (err) {
