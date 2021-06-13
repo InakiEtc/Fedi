@@ -19,7 +19,7 @@ pool.getConnection(function(err,con) {
 var vueltas = 0
 function cambiarEstadoFuncion(){ 
   return new Promise(function (resolve, reject){
-    connection.query("update funciones set vigente = 0 where fecha<=now()", function (error, results, fields){
+    pool.query("update funciones set vigente = 0 where fecha<=now()", function (error, results, fields){
       if (error) throw error;
         this.query = " ";
     });
