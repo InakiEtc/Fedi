@@ -6,7 +6,7 @@ var pool = mysql.createPool({
     poolLimit: 10,
     host: 'localhost',
     user: 'root',
-    password: 'alumno1234',
+    password: 'pelaroot',
     database: 'cine'
 });
 var cluster = require('cluster');
