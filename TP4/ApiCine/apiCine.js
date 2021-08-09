@@ -10,6 +10,7 @@ var pool = mysql.createPool({
     database: 'cine'
 });
 var cluster = require('cluster');
+const { json } = require("body-parser");
 if (cluster.isWorker) {
     process.on('message', function (msg) {
         pool.getConnection(function (err, con) {
@@ -17,16 +18,96 @@ if (cluster.isWorker) {
                 if (msg == "funciones") {
                     if (err)
                         throw err;
-                    con.query("SELECT titulo, img FROM funciones WHERE vigente = 1 AND fecha > NOW() FOR UPDATE", function (err, result, fields) {
+                    con.query("SELECT id, titulo, img FROM funciones WHERE vigente = 1 AND fecha > NOW() FOR UPDATE", function (err, result, fields) {
                         if (err) {
                             return con.rollback(function () {
                                 throw err;
                             });
                         }
-                        console.log(result);
                         con.release();
                         process.send(result);
                         process.kill(process.pid);
+                    });
+                }
+                else if (msg[0] == 'butacas') {
+                    if (err)
+                        throw err;
+                    con.query("SELECT butacas FROM salas inner join funciones on salas.id=funciones.sala where funciones.id =" + msg[1] + " FOR UPDATE", function (err, result, fields) {
+                        if (err) {
+                            return con.rollback(function () {
+                                throw err;
+                            });
+                        }
+                        
+                        con.release();
+                        process.send(result);
+                        process.kill(process.pid);
+                    });
+                }
+                else if (msg[0] == 'reservar') {
+                    con.query("select * from funciones where vigente = 1 and fecha > now() and id = " + msg[1] + " for update", function (err, result, fields) {
+                        if (err)
+                            throw err;
+                        if (result[0] == null) {
+                            con.release();
+                            process.send("La funcion que quiere reservar no existe");
+                            process.kill(process.pid);
+                        }
+                        var butacas = JSON.parse(result[0].butacas_disponibles);
+                        con.query("select * from reservas where usuario = " + msg[3], function (err, result, fields) {
+                            if (err)
+                                throw err;
+                            var funciones = new Array();
+                            result.forEach(function (x) {
+                                funciones.push(x.funcion);
+                            });
+                            if (funciones.includes(parseInt(msg[1]))) {
+                                con.release();
+                                process.send("Ya sacaste entradas para esta funcion");
+                                process.kill(process.pid);
+                            }
+                            if (butacas.length < msg[2].length || msg[2].length > 6) {
+                                con.release();
+                                process.send("No hay butacas suficientes");
+                                process.kill(process.pid);
+                            }
+                            var arrayButacasR = new Array();
+                            for (var i = 0; i < butacas.length; i++) {
+                                for (var j = 0; j < msg[2].length; j++) {
+                                    if (butacas[i] == msg[2][j]) {
+                                        arrayButacasR.push(msg[2][j]);
+                                        butacas.splice(i, 1);
+                                    }
+                                }
+                            }
+                            butacas = JSON.stringify(butacas);
+                            var stringButacasR = JSON.stringify(arrayButacasR);
+                            con.query("insert into reservas values(null," + msg[3] + "," + msg[1] + ", '" + stringButacasR + "')", function (err, result, fields) {
+                                if (err)
+                                    throw err;
+                                con.query("update funciones set butacas_disponibles = '" + butacas + "' where id= " + msg[1], function (err, result, fields) {
+                                    if (err)
+                                        throw err;
+                                    if (butacas.length == 0) {
+                                        con.query("update funciones set vigente = 0 and butacas_disponibles = [] where id= " + msg[1], function (err, result, fields) {
+                                            if (err)
+                                                throw err;
+                                        });
+                                    }
+                                    con.commit(function (err) {
+                                        if (err) {
+                                            return con.rollback(function () {
+                                                throw err;
+                                            });
+                                        }
+                                        con.release();
+                                        console.log("Se reservo correctamente");
+                                        process.send(result);
+                                        process.kill(process.pid);
+                                    });
+                                });
+                            });
+                        });
                     });
                 }
                 else if (msg[0] == 'cancelar') {
@@ -93,6 +174,32 @@ else {
     app.get('/funciones', function (req, res) {
         var worker = cluster.fork();
         worker.send('funciones');
+        worker.on('message', function (result) {
+            res.status(200).send(result);
+        });
+    });
+    app.get('/butacas/:id', function (req, res) {
+        var id = req.param('id');
+        var msg = new Array;
+        msg.push('butacas');
+        msg.push(id);
+        var worker = cluster.fork();
+        worker.send(msg);
+        worker.on('message', function (result) {
+            res.status(200).send(result);
+        });
+    });
+    app.post('/:id_funcion/reservar', function (req, res) {
+        var idF = req.param('id_funcion');
+        var butacasreservar = req.body.butacas;
+        var idUser = req.body.usuario;
+        var msg = new Array;
+        msg.push('reservar');
+        msg.push(idF);
+        msg.push(butacasreservar);
+        msg.push(idUser);
+        var worker = cluster.fork();
+        worker.send(msg);
         worker.on('message', function (result) {
             res.status(200).send(result);
         });
