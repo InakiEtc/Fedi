@@ -2,10 +2,10 @@ import {Producto, Usuario, Favorito, Compra, CalificacionComprador, Calificacion
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
+  host     : 'e-commerce.cqes2fuqkcq9.sa-east-1.rds.amazonaws.com',
+  user     : 'pelaroot',
   password : 'pelaroot',
-  database : 'ecommerce'
+  database : 'e-commerce'
 });
  
 connection.connect(function(err) {
