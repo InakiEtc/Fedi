@@ -24,8 +24,10 @@ app.listen(port, () => {
   console.log(`Se levanto el server en http://localhost:${port}`);
 })
 
+var requestIp = require('request-ip');
 app.get('/', (req, res) => {
-  res.send('prende eso?');
+  var clientIp = requestIp.getClientIp(req);
+  res.send('prende eso?'+clientIp);
 })
 
 app.get('/productos', async(req, res) => {

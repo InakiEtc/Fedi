@@ -57,8 +57,10 @@ var port = 3000;
 app.listen(port, function () {
     console.log("Se levanto el server en http://localhost:" + port);
 });
+var requestIp = require('request-ip');
 app.get('/', function (req, res) {
-    res.send('prende eso?');
+    var clientIp = requestIp.getClientIp(req);
+    res.send('prende eso?' + clientIp);
 });
 app.get('/productos', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var busqueda, orden, usado, p;
