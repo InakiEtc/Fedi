@@ -6,11 +6,10 @@ var pool = mysql.createPool({
     poolLimit: 10,
     host: 'localhost',
     user: 'root',
-    password: 'pelaroot',
+    password: 'alumno1234',
     database: 'cine'
 });
 var cluster = require('cluster');
-const { json } = require("body-parser");
 if (cluster.isWorker) {
     process.on('message', function (msg) {
         pool.getConnection(function (err, con) {
@@ -24,21 +23,6 @@ if (cluster.isWorker) {
                                 throw err;
                             });
                         }
-                        con.release();
-                        process.send(result);
-                        process.kill(process.pid);
-                    });
-                }
-                else if (msg[0] == 'butacas') {
-                    if (err)
-                        throw err;
-                    con.query("SELECT butacas FROM salas inner join funciones on salas.id=funciones.sala where funciones.id =" + msg[1] + " FOR UPDATE", function (err, result, fields) {
-                        if (err) {
-                            return con.rollback(function () {
-                                throw err;
-                            });
-                        }
-                        
                         con.release();
                         process.send(result);
                         process.kill(process.pid);
@@ -101,11 +85,38 @@ if (cluster.isWorker) {
                                             });
                                         }
                                         con.release();
+                                        console.log(stringButacasR);
                                         console.log("Se reservo correctamente");
                                         process.send(result);
                                         process.kill(process.pid);
                                     });
                                 });
+                            });
+                        });
+                    });
+                }
+                else if (msg[0] == 'butacas') {
+                    if (err)
+                        throw err;
+                    con.query("SELECT butacas FROM salas inner join funciones on salas.id=funciones.sala where funciones.id =" + msg[1] + " FOR UPDATE", function (err, result, fields) {
+                        if (err)
+                            throw err;
+                        con.query("SELECT butacas_disponibles FROM funciones WHERE id =" + msg[1] + " FOR UPDATE", function (err, result1, fields) {
+                            if (err)
+                                throw err;
+                            con.query("SELECT img, titulo FROM funciones WHERE id =" + msg[1] + " FOR UPDATE", function (err, result2, fields) {
+                                if (err) {
+                                    return con.rollback(function () {
+                                        throw err;
+                                    });
+                                }
+                                con.release();
+                                var results = [];
+                                results.push(result1);
+                                results.push(result);
+                                results.push(result2);
+                                process.send(results);
+                                process.kill(process.pid);
                             });
                         });
                     });

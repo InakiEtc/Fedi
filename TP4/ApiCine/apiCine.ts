@@ -8,7 +8,7 @@ var pool = mysql.createPool({
   poolLimit: 10,
   host     : 'localhost',
   user     : 'root',
-  password : 'pelaroot',
+  password : 'alumno1234',
   database : 'cine'
 });
 const cluster = require('cluster');
@@ -30,21 +30,7 @@ if(cluster.isWorker){
                 process.send(result);
                 process.kill(process.pid);
             });
-          }
-          else if(msg[0]=='butacas'){
-            if (err) throw err;
-            con.query("SELECT butacas FROM salas inner join funciones on salas.id=funciones.sala where funciones.id ="+msg[1]+" FOR UPDATE", function (err, result, fields) {
-                if (err) {
-                    return con.rollback(function() {
-                        throw err;
-                    });
-                }
-                con.release();
-                process.send(result);
-                process.kill(process.pid);
-            });
-          }
-          else if(msg[0] == 'reservar'){
+          }else if(msg[0] == 'reservar'){
             con.query("select * from funciones where vigente = 1 and fecha > now() and id = "+msg[1]+" for update", function (err, result, fields) {
               if (err) throw err;
               if(result[0] == null){
@@ -96,6 +82,7 @@ if(cluster.isWorker){
                         });
                       }
                       con.release();
+                      console.log(stringButacasR)
                       console.log(`Se reservo correctamente`);
                       process.send(result);
                       process.kill(process.pid);
@@ -104,7 +91,30 @@ if(cluster.isWorker){
                 });  
               });
             });
-          }else if(msg[0] == 'cancelar'){
+          }else if(msg[0]=='butacas'){
+            if (err) throw err;
+            con.query("SELECT butacas FROM salas inner join funciones on salas.id=funciones.sala where funciones.id ="+msg[1]+" FOR UPDATE", function (err, result, fields) {
+              if (err) throw err;
+              con.query("SELECT butacas_disponibles FROM funciones WHERE id ="+msg[1]+" FOR UPDATE", function (err, result1, fields) {
+                if (err) throw err;
+                con.query("SELECT img, titulo FROM funciones WHERE id ="+msg[1]+" FOR UPDATE", function (err, result2, fields) {
+                if (err) {
+                    return con.rollback(function() {
+                        throw err;
+                    });
+                }
+                con.release();
+                let results = []
+                results.push(result1)
+                results.push(result) 
+                results.push(result2)
+                process.send(results);
+                process.kill(process.pid);
+              });
+            });
+          });
+        }
+          else if(msg[0] == 'cancelar'){
             if (err) throw err;
             con.query("START TRANSACTION;", function (err, result, fields) {
               if (err) {
@@ -197,7 +207,7 @@ else {
       let idF = req.param('id_funcion');
       let butacasreservar = req.body.butacas;
       let idUser = req.body.usuario;
-  
+
       let msg = new Array;
       msg.push('reservar');
       msg.push(idF);
